@@ -1,0 +1,17 @@
+{
+  "createdWith": "3.1.3",
+  "examples": "classic",
+  "navigation": "react-navigation",
+  "askToOverwrite": true,
+  "generators": {
+    "component": "custom-rn-boilerplate",
+    "container": "custom-rn-boilerplate",
+    "listview": "custom-rn-boilerplate",
+    "list": "custom-rn-boilerplate",
+    "redux": "custom-rn-boilerplate",
+    "saga": "custom-rn-boilerplate",
+    "screen": "custom-rn-boilerplate"
+  },
+  "boilerplate": "custom-rn-boilerplate",
+  "boilerplateVersion": "1.0.0"
+}
