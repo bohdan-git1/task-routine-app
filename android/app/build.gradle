@@ -140,14 +140,13 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-calendar-events')
     implementation project(':react-native-geolocation-service')
     implementation project(':react-native-device-info')
     implementation project(':react-native-wheel-picker')
     implementation project(':react-native-google-places')
     implementation project(':react-native-image-crop-picker')
-    implementation 'com.android.support:design:27.1.0'
-
-
+    implementation 'com.android.support:design:28.0.0'
     implementation project(':react-native-open-settings')
     implementation project(':react-native-linear-gradient')
     implementation project(':react-native-vector-icons')

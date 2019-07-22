@@ -32,13 +32,12 @@ export default StyleSheet.create({
     },
     textInput: {
       flex: 1,
-        height: 35
     },
     dropdownContainer: {
         flex: 1,
-        height: 35
+        height: 25
     },
     dropdownOffset: {
-        top: 10
+        top: 0
     }
 })

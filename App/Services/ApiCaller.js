@@ -6,8 +6,6 @@ import UserActions from '../Redux/UserRedux'
 function * callServer (apiFunction, reqData, showError = false, id = null) {
   if (isConnected) {
     const response = yield call(apiFunction, reqData, reqData.id || id)
-    // if (__DEV__)console.tron.log({ApiResponse : response});
-    // if (__DEV__)console.log({ApiResponse : response});
     const {status, data: resData, ok = false, problem = 'TIMEOUT_ERROR'} = response || {}
 
     if (ok && status && status >= 200 && status <= 300) {

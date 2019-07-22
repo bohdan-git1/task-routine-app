@@ -57,7 +57,7 @@ class ProgressDialog extends Component {
     }
     return (
       <ActivityIndicator size={size || 'large'} style={[indicatorStyle, {marginTop, top: height / 2, left: width / 2 }]}
-        color={Colors.themeColor} animating={animating} />
+        color={Colors.primaryColor} animating={animating} />
     )
   };
 
@@ -91,7 +91,7 @@ const styles = {
     width: 80,
     height: 80,
     marginLeft: -40,
-    backgroundColor: 'rgba(52, 52, 52, 0.5)'
+    backgroundColor: 'rgba(50,49,52,0.2)'
   }
 }
 

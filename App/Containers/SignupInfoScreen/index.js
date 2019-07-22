@@ -16,7 +16,7 @@ import Input from "../../Components/Input";
 import CheckBox from "../../Components/CheckBox";
 import GradientView from "../../Components/GradientView";
 import RoundedButton from '../../Components/RoundedButton'
-import {handlePermissionError, showSettingsDialog} from "../../Lib/Utilities";
+import {handlePermissionError, showMessage, showSettingsDialog} from "../../Lib/Utilities";
 import {CloudinaryCred, imageOptions, photosPermissionTypes} from "../../Lib/AppConstants";
 import UserActions from "../../Redux/UserRedux";
 import {connect} from "react-redux";
@@ -32,7 +32,8 @@ class SingupInfoScreen extends Component {
             password: '',
             picUrl: '',
             uploadingImage: false,
-            locationCoordinates: []
+            locationCoordinates: [],
+            acceptedTerms: false
         }
         init(CloudinaryCred.apiKey, CloudinaryCred.secret, CloudinaryCred.name)
     }
@@ -97,14 +98,26 @@ class SingupInfoScreen extends Component {
     }
 
     saveProfile = () => {
-        const {firstName, lastName, userName, password, picUrl, locationCoordinates} = this.state
+        const {firstName, lastName, userName, password, picUrl, locationCoordinates, acceptedTerms} = this.state
         const {addProfile, user: {id: userId} = {}} = this.props
         const userInfo = {name: `${firstName} ${lastName}`, username: userName, picUrl, password, locationCoordinates}
-        addProfile(userId, userInfo)
+        if (isEmpty(firstName)) {
+            showMessage('Please enter first name')
+        } else if (isEmpty(lastName)) {
+            showMessage('Please enter last name')
+        } else if (isEmpty(userName)) {
+            showMessage('Please enter username')
+        } else if (isEmpty(password)) {
+            showMessage('Please enter password')
+        } else if (!acceptedTerms) {
+            showMessage('Please accept terms and conditions')
+        } else {
+            addProfile(userId, userInfo)
+        }
     }
 
     render() {
-        const {firstName, lastName, userName, password, picUrl, uploadingImage} = this.state
+        const {firstName, lastName, userName, password, picUrl, uploadingImage, acceptedTerms} = this.state
         const image = isEmpty(picUrl) ? Images.avatar : {uri: picUrl}
         const {fetching} = this.props
         return (
@@ -158,7 +171,10 @@ class SingupInfoScreen extends Component {
                         onChangeText={(password) => this.setState({password})}
                     />
                     <View style={styles.termsConditionsContainer}>
-                        <CheckBox/>
+                        <CheckBox
+                            checked={acceptedTerms}
+                            onChange={(acceptedTerms) => this.setState({acceptedTerms})}
+                        />
                         <Text style={styles.acceptTermsConditions}>{i18n.t('acceptTermsConditions')}</Text>
                     </View>
                     <RoundedButton

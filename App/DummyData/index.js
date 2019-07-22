@@ -36,7 +36,7 @@ export const CalendarData = {
             location: '4113 W Johnson Cir Atlanta, GA, United States'
         },
     ],
-    '2019-07-16': [
+    '2019-07-20': [
         {
             id: 4,
             dateTime: Date.now(),

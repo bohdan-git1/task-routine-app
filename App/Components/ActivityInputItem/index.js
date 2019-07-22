@@ -30,7 +30,8 @@ export default class ActivityInputItem extends Component {
         },
         onChangeText: () => {
         },
-        onChangeCategory: () => {}
+        onChangeCategory: () => {
+        }
     }
 
 
@@ -38,12 +39,8 @@ export default class ActivityInputItem extends Component {
         const {type, value, onChangeText, onChangeCategory} = this.props
         switch (type) {
             case 'input':
-                return <TextInput
-                    KeyboardType='numeric'
-                    onChangeText={onChangeText}
-                    style={styles.textInput}
-                    value={'$ ' + value}
-                />
+                return <Text
+                    style={styles.textInput}>{`$ ${value}`}</Text>
             case 'dropdown':
                 return <Dropdown
                     value={value}
@@ -63,10 +60,10 @@ export default class ActivityInputItem extends Component {
         return (
             <TouchableOpacity onPress={onPress} style={styles.mainContainer}>
                 <Text style={styles.label}>{label}</Text>
-                     <View style={styles.valueContainer}>
-                        {this.renderInput()}
-                        <VectorIcon name={iconName} type={iconType} style={styles.icon}/>
-                    </View>
+                <View style={styles.valueContainer}>
+                    {this.renderInput()}
+                    <VectorIcon name={iconName} type={iconType} style={styles.icon}/>
+                </View>
             </TouchableOpacity>
         )
     }

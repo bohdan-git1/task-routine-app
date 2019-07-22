@@ -17,7 +17,8 @@
     "android:devices": "$ANDROID_HOME/platform-tools/adb devices",
     "android:logcat": "$ANDROID_HOME/platform-tools/adb logcat *:S ReactNative:V ReactNativeJS:V",
     "android:shake": "$ANDROID_HOME/platform-tools/adb devices | grep '\\t' | awk '{print $1}' | sed 's/\\s//g' | xargs -I {} $ANDROID_HOME/platform-tools/adb -s {} shell input keyevent 82",
-    "storybook": "storybook start -p 7007"
+    "storybook": "storybook start -p 7007",
+    "bundle-android": "node node_modules/react-native/local-cli/cli.js bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/"
   },
   "dependencies": {
     "apisauce": "^1.0.2",
@@ -32,6 +33,8 @@
     "react": "16.6.3",
     "react-native": "0.58.6",
     "react-native-actionsheet": "^2.4.2",
+    "react-native-animatable": "^1.3.2",
+    "react-native-calendar-events": "^1.7.3",
     "react-native-calendars": "^1.196.0",
     "react-native-cloudinary-x": "^1.0.3",
     "react-native-device-info": "^2.2.2",
@@ -68,7 +71,6 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "24.8.0",
     "babel-plugin-ignite-ignore-reactotron": "^0.3.0",
-    "custom-rn-boilerplate": "file:F:\\ReactNativeProjects\\rep_react-native-boilerplate",
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.6.0",
     "jest": "24.8.0",

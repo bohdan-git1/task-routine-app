@@ -22,7 +22,9 @@ const { Types, Creators } = createActions({
 
   addProfile: ['userId', 'info'],
   addProfileSuccess: ['user'],
-  addProfileFailure: ['error']
+  addProfileFailure: ['error'],
+
+  logout: null
 })
 
 export const UserTypes = Types
@@ -63,6 +65,10 @@ export const addProfileRequest = (state) => state.merge({ fetching: true })
 export const addProfileSuccess = (state, {user}: Object) => state.merge({ fetching: false, error: null, user})
 export const addProfileFailure = (state) => state.merge({ fetching: false, error: true })
 
+export const logoutUser = (state: Object) => {
+  return state.merge({...INITIAL_STATE})
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -85,7 +91,10 @@ export const reducer = createReducer(INITIAL_STATE, {
 
   [Types.ADD_PROFILE]: addProfileRequest,
   [Types.ADD_PROFILE_SUCCESS]: addProfileSuccess,
-  [Types.ADD_PROFILE_FAILURE]: addProfileFailure
+  [Types.ADD_PROFILE_FAILURE]: addProfileFailure,
+
+  [Types.LOGOUT]: logoutUser
+
 
 })
 

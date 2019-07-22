@@ -20,24 +20,24 @@ export default class CalendarItem extends Component {
 
     render() {
         const {item, onPress} = this.props
-        const {dateTime, type, title, location} = item || {}
+        const {fromTime = '',  type = '', locationName = '', name = ''} = item || {}
         return (
             <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.mainContainer}>
                 <View style={styles.mainContainer}>
                     <View style={styles.yellowLine}/>
                     <View style={styles.rightContainer}>
                         <View style={styles.timeContainer}>
-                            <Text numberOfLines={1} style={styles.time}>{FormatDateTime(dateTime, 'h:mm A')}</Text>
+                            <Text numberOfLines={1} style={styles.time}>{FormatDateTime(fromTime, 'h:mm A')}</Text>
                             <View style={styles.typeContainer}>
                                 <VectorIcon name={'ios-car'} type={'Ionicons'} style={styles.carIcon}/>
                                 <Text style={styles.type}>{type}</Text>
                             </View>
                         </View>
                         <View style={styles.titleContainer}>
-                            <Text style={styles.title}>{title}</Text>
+                            <Text style={styles.title}>{name}</Text>
                             <View style={styles.locationContainer}>
                                 <VectorIcon name={'location-pin'} type={'SimpleLineIcons'} style={styles.locationIcon}/>
-                                <Text style={styles.location}>{location}</Text>
+                                <Text style={styles.location}>{locationName}</Text>
                             </View>
                         </View>
                     </View>

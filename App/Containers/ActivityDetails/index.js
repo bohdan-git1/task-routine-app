@@ -1,19 +1,34 @@
 import React, {Component} from 'react'
-import {ImageBackground, SafeAreaView, StatusBar, Text, View, TouchableOpacity} from 'react-native'
+import {ImageBackground, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native'
 import styles from './styles'
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {Colors, Images} from "../../Themes";
-import {CalendarData} from "../../DummyData";
 import {FormatDateTime} from "../../Lib/Utilities";
 import Input from "../../Components/Input";
 import VectorIcon from "../../Components/VectorIcon";
 import {ActivityActions} from "../../Lib/AppConstants";
+import CalendarActions from "../../Redux/CalendarRedux";
+import {connect} from "react-redux";
+import moment from "moment";
+import {upperFirst} from 'lodash'
+import {ProgressDialog} from "../../Components/ProgressDialog";
 
-export default class ActivityDetails extends Component {
+class ActivityDetails extends Component {
     constructor(props) {
         super(props)
-
         StatusBar.setBackgroundColor(Colors.primaryColorI)
+    }
+
+    componentDidMount() {
+        const {getTaskDetails, taskId = ''} = this.props
+        getTaskDetails(taskId)
+    }
+
+    onPressAction = (actionId) => {
+        const {deleteTask, taskId} = this.props
+        if (actionId === 1) {
+           deleteTask(taskId)
+        }
     }
 
     renderTime = (label, time) => {
@@ -51,7 +66,7 @@ export default class ActivityDetails extends Component {
 
     renderActionItem = (label, color, id) => {
         return (
-            <TouchableOpacity activeOpacity={0.8} style={styles.actionItem}>
+            <TouchableOpacity onPress={() => this.onPressAction(id)} activeOpacity={0.8} style={styles.actionItem}>
                 <View style={styles.actionTitleContainer}>
                     <Text style={styles.actionTitle}>{label}</Text>
                     {id !== 3 && <View style={styles.verticalLine}/>}
@@ -62,30 +77,30 @@ export default class ActivityDetails extends Component {
     }
 
     render() {
-        const {title, location2, dateTime} = CalendarData['2019-07-10'][0]
+        const {task: {name = '', locationName = '', priority = '', budget = '', fromTime = moment(), toTime = moment(), date = moment()}, fetching} = this.props
         return (
             <SafeAreaView style={styles.mainContainer}>
                 <KeyboardAwareScrollView
                     style={styles.scrollContainer}
                     showsVerticalScrollIndicator={false}>
                     <ImageBackground source={Images.event} style={styles.headerContainer}>
-                        <Text style={styles.title}>{title}</Text>
-                        <Text style={styles.locationText}>{location2}</Text>
+                        <Text style={styles.title}>{name}</Text>
+                        <Text style={styles.locationText}>{locationName}</Text>
                     </ImageBackground>
                     <View style={styles.innerContainer}>
                         <View style={styles.timeContainer}>
-                            {this.renderTime('From', dateTime)}
-                            {this.renderTime('To', Date.now())}
+                            {this.renderTime('From', fromTime)}
+                            {this.renderTime('To', toTime)}
                         </View>
 
                         <View style={styles.detailsRow}>
-                            {this.renderDetailsItem('Priority', 'Normal')}
-                            {this.renderDetailsItem('Budget', '$0')}
+                            {this.renderDetailsItem('Priority', upperFirst(priority))}
+                            {this.renderDetailsItem('Budget', `$ ${budget}`)}
                         </View>
 
                         <View style={styles.detailsRow}>
                             {this.renderDetailsItem('Type', 'ERRAND')}
-                            {this.renderDate('Date', dateTime)}
+                            {this.renderDate('Date', date)}
                         </View>
 
                         <Input
@@ -106,7 +121,22 @@ export default class ActivityDetails extends Component {
                         })}
                     </View>
                 </KeyboardAwareScrollView>
+                <ProgressDialog hide={!fetching}/>
             </SafeAreaView>
         )
     }
 }
+
+const mapStateToProps = ({calendar: {fetching, task = {}}}) => {
+    return {fetching, task}
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getTaskDetails: (taskId) => dispatch(CalendarActions.getTaskDetails(taskId)),
+        deleteTask: (taskId) => dispatch(CalendarActions.deleteTask(taskId))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ActivityDetails)
+

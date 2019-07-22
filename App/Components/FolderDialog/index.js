@@ -24,7 +24,7 @@ export default class FolderDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedItem: 0
+            selectedItem: 1
         };
     }
 

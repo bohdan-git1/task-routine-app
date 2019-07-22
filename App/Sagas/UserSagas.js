@@ -11,6 +11,11 @@ export function* onSignUp(api, {info}) {
             const {id: userId = ''} = res
             Actions.verifyPhone({userId})
             yield put(UserActions.signUpSuccess(res.data))
+        } else {
+            if (res.error && typeof res.error === "string") {
+                showMessage(res.error)
+            }
+            yield put(UserActions.signUpFailure({}))
         }
     } catch (e) {
         yield put(UserActions.signUpFailure(e.message))
@@ -22,7 +27,11 @@ export function* onLogin(api, {info}) {
         const {res} = yield call(Api.callServer, api.signIn, info, true)
         if (res && res.isSuccess && res.data) {
             yield put(UserActions.loginSuccess(res.data))
-            Actions.tabbar({type: 'reset'})
+        } else {
+            if (res.error && typeof res.error === "string") {
+                showMessage(res.error)
+            }
+            yield put(UserActions.loginFailure({}))
         }
     } catch (e) {
         yield put(UserActions.loginFailure(e.message))
@@ -33,6 +42,7 @@ export function* onLoginSuccess(api, {user}) {
     try {
         const {token = ''} = user || {}
         api.setHeaders({'x-access-token': token})
+        Actions.tabbar({type: 'reset'})
     } catch (e) {
         console.tron.warn(e)
     }
@@ -45,6 +55,11 @@ export function* onVerifyPin(api, {info}) {
         if (res && res.isSuccess) {
             yield put(UserActions.verifyPinSuccess(res.data))
             Actions.profileInfo()
+        } else {
+            if (res.error && typeof res.error === "string") {
+                showMessage(res.error)
+            }
+            yield put(UserActions.verifyPinFailure({}))
         }
     } catch (e) {
         yield put(UserActions.verifyPinFailure(e.message))
@@ -57,6 +72,11 @@ export function* onResendPin(api, {info}) {
         if (res && res.isSuccess) {
             yield put(UserActions.resendPinSuccess(res.data))
             showMessage('No Pin sent Successfully')
+        } else {
+            if (res.error && typeof res.error === "string") {
+                showMessage(res.error)
+            }
+            yield put(UserActions.resendPinFailure({}))
         }
     } catch (e) {
         yield put(UserActions.resendPinFailure(e.message))
@@ -70,8 +90,18 @@ export function* onAddProfile(api, {userId, info}) {
         if (res && res.isSuccess) {
             Actions.tabbar({type: 'reset'})
             yield put(UserActions.addProfileSuccess(res.data))
+        } else {
+            if (res.error && typeof res.error === "string") {
+                showMessage(res.error)
+            }
+            yield put(UserActions.addProfileFailure({}))
         }
     } catch (e) {
         yield put(UserActions.addProfileFailure(e.message))
     }
+}
+
+export function* logout(api) {
+    api.setHeaders({'Authorization': ''})
+    Actions.login({type: 'reset'})
 }

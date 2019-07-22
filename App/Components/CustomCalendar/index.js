@@ -3,6 +3,7 @@ import {Agenda} from 'react-native-calendars'
 import Colors from '../../Themes/Colors'
 import React, {Component} from 'react'
 import {View} from 'react-native'
+import AnimatedAlert from "../AnimatedAlert";
 
 export default class AgendaCalendar extends Component {
     static propTypes = {
@@ -20,6 +21,10 @@ export default class AgendaCalendar extends Component {
         hideDot: false,
     }
 
+    renderEmptyData = () => {
+        return <AnimatedAlert title={'No Activity Found'}/>
+    }
+
     render () {
         const {items, renderItem, renderEmptyData} = this.props
         return (
@@ -31,6 +36,7 @@ export default class AgendaCalendar extends Component {
                 rowHasChanged={this.rowHasChanged}
                 renderEmptyDate={<View/>}
                 renderEmptyDay={<View/>}
+                renderEmptyData = {this.renderEmptyData}
                 theme={{
                     dayTextColor: Colors.black,
                     weekTextColor: Colors.black,

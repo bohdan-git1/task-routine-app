@@ -40,6 +40,12 @@ const create = (baseURL = 'http://192.168.8.100:3030/api/') => {
     const resendPinCode = (info) => api.post('users/resend', info)
     const addProfile = (info, userId) => api.post(`users/addprofile/${userId}`, info)
 
+    // Calendar
+    const addNewTask = (task) => api.post('tasks', task)
+    const getAllTasks = (params) => api.get('tasks', params)
+    const getTaskDetails = (taskId) => api.get(`tasks/${taskId}`)
+    const deleteTask = (taskId) => api.delete(`tasks/${taskId}`)
+
 
     // ------
     // STEP 3
@@ -55,11 +61,16 @@ const create = (baseURL = 'http://192.168.8.100:3030/api/') => {
     //
     return {
         // a list of the API functions from step 2
+        ...api,
         signUpUser,
         signIn,
         verifyPinCode,
         resendPinCode,
-        addProfile
+        addProfile,
+        addNewTask,
+        getAllTasks,
+        getTaskDetails,
+        deleteTask
     }
 }
 

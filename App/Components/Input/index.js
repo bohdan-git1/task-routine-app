@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import styles from './styles'
 import React, {Component} from 'react'
 import Color from '../../Themes/Colors'
+import {isEmpty} from 'lodash'
 import {Text, TextInput, TouchableOpacity} from 'react-native'
 
 
@@ -86,10 +87,10 @@ export default class Input extends Component {
   }
 
   render () {
-    const {lineInput, label, containerStyle, labelStyle} = this.props
+    const {label, containerStyle, labelStyle} = this.props
     return (
       <TouchableOpacity activeOpacity={1} onPress={this.focus.bind(this)} style={[styles.containerStyle, containerStyle]}>
-        <Text style={[styles.label,  labelStyle]}>{label}</Text>
+        {!isEmpty(label) && <Text style={[styles.label,  labelStyle]}>{label}</Text> }
         {this.renderTextInput()}
       </TouchableOpacity>
     )

@@ -54,4 +54,7 @@ target 'Zeloo' do
 
   pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
 
+  pod 'react-native-calendar-events', :path => '../node_modules/react-native-calendar-events'
+
+
 end

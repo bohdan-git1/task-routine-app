@@ -1,46 +1,82 @@
 import React, {Component} from 'react'
 import RNGooglePlaces from 'react-native-google-places';
 import {Text, TouchableOpacity, View, StatusBar} from 'react-native'
-import Input from "../../Components/Input";
-import styles from './styles'
-import ActivityInputItem from "../../Components/ActivityInputItem";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
-import {FormatDateTime} from "../../Lib/Utilities";
 import moment from "moment";
-import PriorityItem from "../../Components/PriorityItem";
+import i18n from "i18n-js";
+import {connect} from "react-redux";
+
+import styles from './styles'
+import {Colors} from "../../Themes";
+import Input from "../../Components/Input";
+import CheckBox from "../../Components/CheckBox";
+import {FormatDateTime} from "../../Lib/Utilities";
 import VectorIcon from "../../Components/VectorIcon";
 import GradientView from "../../Components/GradientView";
 import RoundedButton from "../../Components/RoundedButton";
 import FolderDialog from "../../Components/FolderDialog";
-import CheckBox from "../../Components/CheckBox";
-import i18n from "i18n-js";
-import {Colors} from "../../Themes";
+import CalendarActions from "../../Redux/CalendarRedux";
+import PriorityItem from "../../Components/PriorityItem";
+import {Priority_Types} from "../../Lib/AppConstants";
+import InviteDialog from "../../Components/InviteDialog";
+import {ProgressDialog} from "../../Components/ProgressDialog";
+import ActivityInputItem from "../../Components/ActivityInputItem";
+import BudgetDialog from "../../Components/BudgetDialog";
 
-export default class CreateActivity extends Component {
+class CreateActivity extends Component {
     constructor(props) {
         super(props)
         this.state = {
             name: '',
-            location: 'Location',
+            locationName: 'Location',
             showDatePicker: false,
             pickerKey: '',
             date: moment(),
-            form: moment(),
-            to: moment(),
+            fromTime: moment(),
+            toTime: moment(),
             budget: '',
             category: 'Category',
             priority: 1,
-            showFolderDialog: false
+            note: '',
+            syncCalendar: false,
+            locationCoordinates: [],
+            showFolderDialog: false,
+            showInviteDialog: false,
+            showBudgetDialog: false,
+            invites: []
         }
         StatusBar.setBackgroundColor(Colors.primaryColorI)
+    }
+
+    addNewTask = () => {
+        const {addNewTaskReq} = this.props
+        const {name, locationName, date, fromTime, toTime, budget, category, priority, locationCoordinates, note, syncCalendar, invites} = this.state
+        const task = {
+            name,
+            locationName,
+            date,
+            fromTime,
+            toTime,
+            budget,
+            note,
+            folderId: 32,
+            category,
+            priority: Priority_Types[priority]['type'],
+            invites,
+            locationCoordinates
+        }
+        addNewTaskReq(task, syncCalendar)
     }
 
     openPlacePicker = () => {
         RNGooglePlaces.openAutocompleteModal()
             .then((place) => {
-                console.tron.warn(place);
-                this.setState({location: place.address || ''})
+                const {address, location: {latitude = '', longitude = ''} = {}} = place
+                const locationCoordinates = []
+                locationCoordinates.push(latitude)
+                locationCoordinates.push(longitude)
+                this.setState({locationName: address || '', locationCoordinates})
             })
             .catch(error => console.log(error.message));  // error is a Javascript Error object
     }
@@ -59,8 +95,20 @@ export default class CreateActivity extends Component {
         this.setState({budget: budget[1]})
     }
 
+    addInvite = (invite) => {
+        let {invites} = this.state
+        invites.push(invite)
+        this.setState({invites, showInviteDialog: false})
+    }
+
+    saveBudget = (budgetInfo) => {
+       const {amount: budget} = budgetInfo
+        this.setState({budget, showBudgetDialog: false})
+    }
+
     render() {
-        const {name, location, showDatePicker, date, to, from, pickerKey, budget, category, priority, showFolderDialog} = this.state
+        const {fetching} = this.props
+        const {name, locationName, showDatePicker, date, toTime, fromTime, pickerKey, budget, category, priority, showFolderDialog, note, syncCalendar, showInviteDialog, showBudgetDialog} = this.state
         const mode = pickerKey === 'date' ? 'date' : 'time'
         return (
             <GradientView gradientStyles={styles.gradientStyles}>
@@ -82,7 +130,7 @@ export default class CreateActivity extends Component {
 
                     <ActivityInputItem
                         label='Location'
-                        value={location}
+                        value={locationName}
                         iconName='my-location'
                         iconType='MaterialIcons'
                         onPress={this.openPlacePicker}
@@ -110,8 +158,8 @@ export default class CreateActivity extends Component {
                             label='From'
                             iconType='Ionicons'
                             iconName='md-arrow-dropdown'
-                            value={FormatDateTime(from, 'hh:mm A')}
-                            onPress={() => this.showDatePicker('from')}
+                            value={FormatDateTime(fromTime, 'hh:mm A')}
+                            onPress={() => this.showDatePicker('fromTime')}
                         />
 
                         <View style={styles.dummyItem}/>
@@ -120,8 +168,8 @@ export default class CreateActivity extends Component {
                             label='To'
                             iconType='Ionicons'
                             iconName='md-arrow-dropdown'
-                            value={FormatDateTime(to, 'hh:mm A')}
-                            onPress={() => this.showDatePicker('to')}
+                            value={FormatDateTime(toTime, 'hh:mm A')}
+                            onPress={() => this.showDatePicker('toTime')}
                         />
 
                     </View>
@@ -134,7 +182,7 @@ export default class CreateActivity extends Component {
                             value={budget}
                             iconType='Ionicons'
                             iconName='md-arrow-dropdown'
-                            onChangeText={this.setBudget}
+                            onPress={() => {this.setState({showBudgetDialog: true})}}
                         />
 
                         <View style={styles.dummyCategory}/>
@@ -158,23 +206,31 @@ export default class CreateActivity extends Component {
                     />
 
                     <Input
+                        value={note}
                         placeholder='Notes'
                         label='Notes (Optional)'
                         labelStyle={styles.grayLabel}
                         numberOfLines={3} multiLine
                         containerStyle={styles.notesContainer}
+                        onChangeText={(note) => {
+                            this.setState({note})
+                        }}
                         styleOverride={styles.notesInputContainer}
                     />
 
-                    <View>
+                    <TouchableOpacity onPress={() => {
+                        this.setState({showInviteDialog: true})
+                    }}>
                         <Text style={styles.inviteLabel}>Invites</Text>
                         <VectorIcon name='plus' type='SimpleLineIcons' style={styles.addIcon}/>
-                    </View>
+                    </TouchableOpacity>
 
                     <View style={styles.synchronizeContainer}>
                         <CheckBox
                             tickColor={Colors.black}
                             borderColor={Colors.black}
+                            checked={syncCalendar}
+                            onChange={(syncCalendar) => this.setState({syncCalendar})}
                         />
                         <Text style={styles.synchronizeText}>{i18n.t('synchronizeCalendar')}</Text>
                     </View>
@@ -183,6 +239,7 @@ export default class CreateActivity extends Component {
 
                 <RoundedButton
                     text={'ADD'}
+                    onPress={this.addNewTask}
                     buttonContainer={styles.addButtonContainer}
                 />
 
@@ -195,10 +252,33 @@ export default class CreateActivity extends Component {
                     onCancel={() => this.setState({showDatePicker: false})}
                 />
                 {showFolderDialog && <FolderDialog
-                  onDone={()=> this.setState({showFolderDialog:false})}
-                  onCancel={()=> this.setState({showFolderDialog:false})}
-                /> }
+                    onDone={() => this.setState({showFolderDialog: false})}
+                    onCancel={() => this.setState({showFolderDialog: false})}
+                />}
+
+                {showInviteDialog && <InviteDialog
+                    onDone={this.addInvite}
+                    onCancel={() => this.setState({showInviteDialog: false})}
+                />
+                }
+                {showBudgetDialog && <BudgetDialog
+                    onCancel={() => this.setState({showBudgetDialog: false})}
+                    onDone={this.saveBudget}
+                />}
+                <ProgressDialog hide={!fetching}/>
             </GradientView>
         )
     }
 }
+
+const mapStateToProps = ({calendar: {fetching}}) => {
+    return {fetching}
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addNewTaskReq: (task, syncCalendar) => dispatch(CalendarActions.addNewTask(task, syncCalendar))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreateActivity)
