@@ -1,7 +1,7 @@
 import styles from './styles'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {Text, TouchableOpacity, View} from 'react-native'
+import {Text, TouchableOpacity, View, Keyboard} from 'react-native'
 import Input from "../Input";
 import VectorIcon from "../VectorIcon";
 import {User_Roles} from "../../Lib/AppConstants";
@@ -31,6 +31,7 @@ export default class InviteDialog extends Component {
     }
 
     addInvite = () => {
+        Keyboard.dismiss()
         const {onDone} = this.props
         const {name, phone, role} = this.state
         onDone({name, phone, role})
@@ -56,9 +57,11 @@ export default class InviteDialog extends Component {
                      <Input
                          value={name}
                          label={'User Name'}
+                         returnKeyType={'next'}
                          placeholder={'User Name'}
                          labelStyle={styles.inputLabel}
                          containerStyle={styles.bottomLine}
+                         onSubmitEditing={() => this.phone.focus()}
                          onChangeText={(name) => {this.setState({name})}}
                      />
                         <View style={styles.rowContainer}>
@@ -68,7 +71,10 @@ export default class InviteDialog extends Component {
                                  label={'Phone'}
                                  placeholder={'Phone'}
                                  keyboardType={'number-pad'}
+                                 ref={ref => this.phone = ref}
                                  labelStyle={styles.inputLabel}
+                                 onSubmitEditing={Keyboard.dismiss}
+                                 returnKeyType={'done'}
                                  containerStyle={styles.phoneInputContainer}
                                  onChangeText={(phone) => {this.setState({phone})}}
                              />
@@ -77,6 +83,7 @@ export default class InviteDialog extends Component {
                             <Dropdown
                                 value={role}
                                 data={User_Roles}
+                                dropdownPosition={0}
                                 baseColor={Colors.offWhiteI}
                                 dropdownOffset={styles.dropdownOffset}
                                 containerStyle={styles.dropdownContainer}

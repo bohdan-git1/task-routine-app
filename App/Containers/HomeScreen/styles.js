@@ -22,6 +22,6 @@ export default StyleSheet.create({
         height: 150,
         alignSelf: 'center',
         resizeMode: 'contain',
-        marginTop: Metrics.marginThirty
+        marginTop: '20%'
     }
 })

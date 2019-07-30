@@ -58,3 +58,5 @@ buck-out/
 # Misc
 #
 .env
+Pods/
+Podfile.lock

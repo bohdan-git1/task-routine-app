@@ -26,9 +26,9 @@ class Calendars extends Component {
             RNCalendarEvents.findCalendars().then((calendars) => {
                 const primaryCalendar = calendars.find(c => c.isPrimary && c.allowsModifications)
                 RNCalendarEvents.saveCalendar(primaryCalendar).then((res) => {
-                    console.tron.warn({res})
+                    // console.tron.warn({res})
                 })
-                console.tron.warn(calendars)
+             //   console.tron.warn(calendars)
             })
         })
     }

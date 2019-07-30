@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import RNGooglePlaces from 'react-native-google-places';
-import {Text, TouchableOpacity, View, StatusBar} from 'react-native'
+import {Text, TouchableOpacity, View, StatusBar, Keyboard} from 'react-native'
 import DateTimePicker from "react-native-modal-datetime-picker";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import moment from "moment";
@@ -40,7 +40,7 @@ class CreateActivity extends Component {
             priority: 1,
             note: '',
             syncCalendar: false,
-            locationCoordinates: [],
+            locationCoordinates: [0,0],
             showFolderDialog: false,
             showInviteDialog: false,
             showBudgetDialog: false,
@@ -73,9 +73,9 @@ class CreateActivity extends Component {
         RNGooglePlaces.openAutocompleteModal()
             .then((place) => {
                 const {address, location: {latitude = '', longitude = ''} = {}} = place
-                const locationCoordinates = []
-                locationCoordinates.push(latitude)
-                locationCoordinates.push(longitude)
+                const locationCoordinates = [0, 0]
+                locationCoordinates[0] = latitude
+                locationCoordinates[1] = longitude
                 this.setState({locationName: address || '', locationCoordinates})
             })
             .catch(error => console.log(error.message));  // error is a Javascript Error object
@@ -122,6 +122,8 @@ class CreateActivity extends Component {
                         label={'Name'}
                         placeholder={'Name'}
                         labelStyle={styles.grayLabel}
+                        returnKeyType={'done'}
+                        onSubmitEditing={Keyboard.dismiss}
                         containerStyle={styles.bottomLine}
                         onChangeText={(name) => {
                             this.setState({name})

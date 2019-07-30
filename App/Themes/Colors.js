@@ -10,6 +10,7 @@ const colors = {
   black: '#2d2d2d',
   offWhite: '#f8f7f5',
   offWhiteI: '#b4aea6',
+  offWhiteII: '#f0eee9',
   yellow: '#f6e880',
   orange: '#d87a3c',
   green: '#6d964e',

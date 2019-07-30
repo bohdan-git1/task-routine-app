@@ -26,8 +26,8 @@ const updateConnected = ({type}) => {
     for (const Cb of connectedCallbacks) {
         Cb(isConnected)
     }
-   /* console.tron.log('Network Connection = ' + isConnected)
-    console.log('Network Connection = ' + isConnected)*/
+    /* console.tron.log('Network Connection = ' + isConnected)
+     console.log('Network Connection = ' + isConnected)*/
 }
 
 export const checkConnected = () => {
@@ -78,6 +78,11 @@ export const showErrorMessage = (error: any) => {
 export const isValidEmail = (email: string) => {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(email)
+}
+
+export const isValidPassword = (password: string) => {
+    var re = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})")
+    return re.test(password)
 }
 
 export const isValidPhoneNo = (phoneNo: string) => {
@@ -152,7 +157,7 @@ const formatEvent = async (options) => {
         await RNCalendarEvents.findCalendars().catch(err => console.log(err))
     const primaryCalendar =
         calendars.find(c => c.isPrimary && c.allowsModifications)
-    console.tron.warn({primaryCalendar})
+
     if (!primaryCalendar) {
         return null
     }
@@ -168,7 +173,7 @@ const formatEvent = async (options) => {
 }
 
 export const createEvent = options => {
- return new Promise(resolve =>
+    return new Promise(resolve =>
         validateAuth(
             () => RNCalendarEvents
                 .saveEvent(options.title, formatEvent(options))

@@ -1,19 +1,15 @@
-import { takeLatest, all } from 'redux-saga/effects'
+import {all, takeLatest} from 'redux-saga/effects'
 import API from '../Services/Api'
-import FixtureAPI from '../Services/FixtureApi'
-import DebugConfig from '../Config/DebugConfig'
+import {StartupTypes} from '../Redux/StartupRedux'
+import {UserTypes} from '../Redux/UserRedux'
+import {CalendarTypes} from '../Redux/CalendarRedux'
+import {startup} from './StartupSagas'
+import {onAddNewTask, onDeleteTask, onGetAllTasks, onGetTaskDetails} from './CalendarSagas'
+import {logout, onAddProfile, onLogin, onLoginSuccess, onResendPin, onSignUp, onVerifyPin} from './UserSagas'
+import {APP_URL} from "../Lib/AppConstants";
 
 /* ------------- Types ------------- */
-
-import { StartupTypes } from '../Redux/StartupRedux'
-import { UserTypes } from '../Redux/UserRedux'
-import { CalendarTypes } from '../Redux/CalendarRedux'
 /* ------------- Sagas ------------- */
-
-import { startup } from './StartupSagas'
-import { onAddNewTask, onGetAllTasks, onGetTaskDetails, onDeleteTask } from './CalendarSagas'
-import { onSignUp, onVerifyPin, onResendPin, onAddProfile, onLogin, onLoginSuccess, logout } from './UserSagas'
-import {APP_URL} from "../Lib/AppConstants";
 
 /* ------------- API ------------- */
 

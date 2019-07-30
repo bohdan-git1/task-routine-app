@@ -28,4 +28,5 @@
   "acceptTermsConditions": "I accept the terms and conditions",
   "today": "Today",
   "synchronizeCalendar": "Synchronize to Calendar",
+  "passwordLength": "Password length must be 8 characters containing uppercase letters, numbers and special characters",
 }

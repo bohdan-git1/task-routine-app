@@ -14,9 +14,9 @@ export function* onAddNewTask(api, {task, syncCalendar}) {
             if (syncCalendar) {
                 const {name = '', date: startDate = '', locationName: location = '', toTime: endDate = ''} = data || {}
                 RNCalendarEvents.saveEvent(name, {startDate, location, endDate}).then((res) => {
-                    console.tron.warn(res)
+                    // console.tron.warn(res)
                 }).catch((error) => {
-                    console.tron.warn(error)
+                    // console.tron.warn(error)
                 })
             }
             showMessage('New task added successfully')

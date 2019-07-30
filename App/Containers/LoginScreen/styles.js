@@ -17,7 +17,8 @@ export default StyleSheet.create({
     },
     signIn: {
         color: Colors.snow,
-        fontSize: Fonts.size.regular
+        fontSize: Fonts.size.regular,
+        paddingVertical: Metrics.baseMargin
     },
     buttonContainer: {
         marginTop: Metrics.marginThirty

@@ -4,10 +4,9 @@ import {Actions} from 'react-native-router-flux'
 import {isEmpty} from 'lodash'
 
 export function * startup (api) {
-  yield delay(200)
+  yield delay(500)
   const {user} = yield select(state => (state.user))
-
-  if (!isEmpty(user)) {
+  if (!isEmpty(user) && user.token && !isEmpty(user.token)) {
     yield put(UserActions.loginSuccess(user))
   } else {
     Actions.home({type: 'reset'})

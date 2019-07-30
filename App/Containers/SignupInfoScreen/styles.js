@@ -32,5 +32,9 @@ export default StyleSheet.create({
         color: Colors.snow,
         fontSize: Fonts.size.regular,
         marginLeft: Metrics.baseMargin
+    },
+    passwordInfo: {
+        color:  Colors.gray,
+        fontSize: Fonts.size.small
     }
 })

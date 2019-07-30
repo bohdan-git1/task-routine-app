@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native'
+import {StyleSheet, Platform} from 'react-native'
 import {ApplicationStyles, Colors, Metrics, Fonts} from '../../Themes/index'
 
 export default StyleSheet.create({
@@ -14,13 +14,18 @@ export default StyleSheet.create({
     itemContainer: {
         width: 75,
         height: 40,
+        shadowColor: '#ccc',
+        shadowOffset: {width: 3, height: 3},
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
         elevation: Metrics.smallMargin,
         backgroundColor: Colors.snow,
-        marginRight: Metrics.baseMargin
+        marginRight: Metrics.baseMargin,
     },
     priority: {
         flex: 1,
         textAlign: 'center',
-        textAlignVertical: 'center'
+        textAlignVertical: 'center',
+        paddingTop: Platform.OS === 'ios' ? Metrics.baseMargin : 0
     }
 })

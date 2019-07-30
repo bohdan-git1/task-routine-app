@@ -44,7 +44,7 @@ export function* onLoginSuccess(api, {user}) {
         api.setHeaders({'x-access-token': token})
         Actions.tabbar({type: 'reset'})
     } catch (e) {
-        console.tron.warn(e)
+        //console.tron.warn(e)
     }
 }
 
@@ -54,7 +54,7 @@ export function* onVerifyPin(api, {info}) {
         const {res} = yield call(Api.callServer, api.verifyPinCode, info, true)
         if (res && res.isSuccess) {
             yield put(UserActions.verifyPinSuccess(res.data))
-            Actions.profileInfo()
+            Actions.profileInfo({type: 'reset', isFromVerifyPin: true})
         } else {
             if (res.error && typeof res.error === "string") {
                 showMessage(res.error)
@@ -88,7 +88,7 @@ export function* onAddProfile(api, {userId, info}) {
     try {
         const {res} = yield call(Api.callServer, api.addProfile, info, true, userId)
         if (res && res.isSuccess) {
-            Actions.tabbar({type: 'reset'})
+            Actions.login({type: 'reset'})
             yield put(UserActions.addProfileSuccess(res.data))
         } else {
             if (res.error && typeof res.error === "string") {

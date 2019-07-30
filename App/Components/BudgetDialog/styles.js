@@ -10,12 +10,13 @@ export default StyleSheet.create({
         bottom: 0,
         position: 'absolute',
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: Colors.promptBackground
     },
     innerContainer: {
+        width: Metrics.screenWidth - 40,
+        marginTop: Metrics.marginThirty,
+        borderRadius: Metrics.marginFifteen,
         backgroundColor: Colors.primaryColorI,
-        width: Metrics.screenWidth - 40
     },
     header: {
         flexDirection: 'row',

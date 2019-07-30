@@ -2,7 +2,7 @@
 import apisauce from 'apisauce'
 
 // our "constructor"
-const create = (baseURL = 'http://192.168.8.100:3030/api/') => {
+const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
     // ------
     // STEP 1
     // ------

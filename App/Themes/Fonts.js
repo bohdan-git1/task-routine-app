@@ -1,7 +1,8 @@
+import {Platform} from 'react-native'
 const type = {
-  regular: 'Myriad_Pro_Regular',
-  semiBold: 'Myriad_Pro_Semibold',
-  bold: 'Myriad_Pro_Bold'
+  regular:  Platform.OS === 'ios' ? 'Myriad Pro' : 'Myriad_Pro_Regular',
+  semiBold: Platform.OS === 'ios' ? 'MyriadPro-Semibold' : 'Myriad_Pro_Semibold',
+  bold: Platform.OS === 'ios' ? 'MyriadPro-BoldSemiExt' : 'MyriadPro-BoldSemiExt'
 }
 
 const size = {

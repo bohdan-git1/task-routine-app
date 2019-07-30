@@ -16,7 +16,7 @@ import Input from "../../Components/Input";
 import CheckBox from "../../Components/CheckBox";
 import GradientView from "../../Components/GradientView";
 import RoundedButton from '../../Components/RoundedButton'
-import {handlePermissionError, showMessage, showSettingsDialog} from "../../Lib/Utilities";
+import {handlePermissionError, isValidPassword, showMessage, showSettingsDialog} from "../../Lib/Utilities";
 import {CloudinaryCred, imageOptions, photosPermissionTypes} from "../../Lib/AppConstants";
 import UserActions from "../../Redux/UserRedux";
 import {connect} from "react-redux";
@@ -32,7 +32,7 @@ class SingupInfoScreen extends Component {
             password: '',
             picUrl: '',
             uploadingImage: false,
-            locationCoordinates: [],
+            locationCoordinates: [0, 0],
             acceptedTerms: false
         }
         init(CloudinaryCred.apiKey, CloudinaryCred.secret, CloudinaryCred.name)
@@ -50,7 +50,7 @@ class SingupInfoScreen extends Component {
                         this.setState({locationCoordinates})
                     },
                     (error) => {
-                        console.tron.warn({code: error.code, message: error.message})
+                      //  console.tron.warn({code: error.code, message: error.message})
                     },
                     {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000}
                 )
@@ -68,7 +68,7 @@ class SingupInfoScreen extends Component {
         UploadImage(path).then((picUrl) => {
             this.setState({picUrl, uploadingImage: false})
         }).catch(err => {
-            console.tron.warn({err})
+          //  console.tron.warn({err})
             this.setState({uploadingImage: false})
         })
     }
@@ -101,6 +101,7 @@ class SingupInfoScreen extends Component {
         const {firstName, lastName, userName, password, picUrl, locationCoordinates, acceptedTerms} = this.state
         const {addProfile, user: {id: userId} = {}} = this.props
         const userInfo = {name: `${firstName} ${lastName}`, username: userName, picUrl, password, locationCoordinates}
+        Keyboard.dismiss()
         if (isEmpty(firstName)) {
             showMessage('Please enter first name')
         } else if (isEmpty(lastName)) {
@@ -109,7 +110,9 @@ class SingupInfoScreen extends Component {
             showMessage('Please enter username')
         } else if (isEmpty(password)) {
             showMessage('Please enter password')
-        } else if (!acceptedTerms) {
+        } else if(!isValidPassword(password)){
+            showMessage(i18n.t('passwordLength'))
+        }else if (!acceptedTerms) {
             showMessage('Please accept terms and conditions')
         } else {
             addProfile(userId, userInfo)
@@ -125,7 +128,7 @@ class SingupInfoScreen extends Component {
                 <KeyboardAwareScrollView keyboardShouldPersistTaps='handled' style={styles.mainContainer}
                                          showsVerticalScrollIndicator={false}>
                     <TouchableOpacity style={styles.profileImageContainer} onPress={this.showActionSheet}>
-                        <Image source={image} style={styles.profileImage}/>
+                        <Image source={image} style={styles.profileImage} key={'image'}/>
                         <ActionSheet
                             ref={o => this.ImageSheet = o}
                             options={[I18n.t('captureImage'), I18n.t('selectFromGallery'), I18n.t('cancel')]}
@@ -163,13 +166,13 @@ class SingupInfoScreen extends Component {
                         password
                         value={password}
                         returnKeyType={'done'}
-                        onSubmitEditing={() => {
-                        }}
+                        onSubmitEditing={Keyboard.dismiss}
                         label={I18n.t('password')}
                         ref={ref => this.passwordRef = ref}
                         placeholder={I18n.t('password')}
                         onChangeText={(password) => this.setState({password})}
                     />
+                    <Text style={styles.passwordInfo}>{i18n.t('passwordLength')}</Text>
                     <View style={styles.termsConditionsContainer}>
                         <CheckBox
                             checked={acceptedTerms}

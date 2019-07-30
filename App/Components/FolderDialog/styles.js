@@ -10,11 +10,11 @@ export default StyleSheet.create({
         bottom: 0,
         position: 'absolute',
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: Colors.promptBackground
     },
     innerContainer: {
         width: 280,
+        marginTop:  Metrics.marginThirty,
         borderRadius: 15,
         backgroundColor: Colors.snow
     },

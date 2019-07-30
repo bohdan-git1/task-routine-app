@@ -26,17 +26,14 @@ export default class ActivityInputItem extends Component {
         type: '',
         iconName: 'my-location',
         iconType: 'MaterialIcons',
-        onPress: () => {
-        },
-        onChangeText: () => {
-        },
-        onChangeCategory: () => {
-        }
+        onPress: () => {},
+        onChangeText: () => {},
+        onChangeCategory: () => {}
     }
 
 
     renderInput = () => {
-        const {type, value, onChangeText, onChangeCategory} = this.props
+        const {type, value, label, onChangeCategory} = this.props
         switch (type) {
             case 'input':
                 return <Text
@@ -50,13 +47,13 @@ export default class ActivityInputItem extends Component {
                     containerStyle={styles.dropdownContainer}
                     data={Activity_category}/>
             default:
-                return <Text style={styles.value}>{value}</Text>
+                return <Text style={[styles.value, label === value && {color: Colors.grayI}]}>{value}</Text>
 
         }
     }
 
     render() {
-        const {onPress, label, value, iconName, iconType, type, onChangeText} = this.props
+        const {onPress, label, iconName, iconType} = this.props
         return (
             <TouchableOpacity onPress={onPress} style={styles.mainContainer}>
                 <Text style={styles.label}>{label}</Text>

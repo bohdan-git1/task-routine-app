@@ -1,7 +1,7 @@
 import styles from './styles'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {Text, TouchableOpacity, View} from 'react-native'
+import {Text, TouchableOpacity, View, Keyboard} from 'react-native'
 import Input from "../Input";
 import VectorIcon from "../VectorIcon";
 import {Budget_Types, User_Roles} from "../../Lib/AppConstants";
@@ -32,6 +32,7 @@ export default class BudgetDialog extends Component {
     }
 
     saveBudget = () => {
+        Keyboard.dismiss()
         const {onDone} = this.props
         const {amount, description, type} = this.state
         onDone({amount, description, type})
@@ -83,9 +84,12 @@ export default class BudgetDialog extends Component {
                                 onChangeText={(amount) => {
                                     this.setState({amount})
                                 }}
+                                returnKeyType={'next'}
+                                onSubmitEditing={() => this.description.focus()}
                             />
                         </View>
                         <Input
+                            ref={ref => this.description = ref}
                             value={description}
                             label={'Description'}
                             placeholder={'Description'}
@@ -94,6 +98,8 @@ export default class BudgetDialog extends Component {
                             onChangeText={(description) => {
                                 this.setState({description})
                             }}
+                            returnKeyType={'done'}
+                            onSubmitEditing={Keyboard.dismiss}
                         />
                     </View>
                     <RoundedButton
@@ -101,7 +107,7 @@ export default class BudgetDialog extends Component {
                         onPress={this.saveBudget}
                         buttonContainer={styles.buttonContainer}
                     />
-                </TouchableOpacity>
+                    </TouchableOpacity>
             </TouchableOpacity>
         )
     }
