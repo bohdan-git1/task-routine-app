@@ -1,12 +1,11 @@
 import {isEmpty} from 'ramda'
 import React, {Component} from 'react'
-import Permissions from 'react-native-permissions'
 import ActionSheet from "react-native-actionsheet";
 import ImagePicker from "react-native-image-crop-picker";
-import Geolocation from 'react-native-geolocation-service'
 import {Image, Keyboard, Text, TouchableOpacity, View} from "react-native";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {init, UploadImage} from 'react-native-cloudinary-x'
+import * as _ from 'lodash'
 
 import i18n from 'i18n-js'
 import styles from "./styles";
@@ -16,7 +15,7 @@ import Input from "../../Components/Input";
 import CheckBox from "../../Components/CheckBox";
 import GradientView from "../../Components/GradientView";
 import RoundedButton from '../../Components/RoundedButton'
-import {handlePermissionError, isValidPassword, showMessage, showSettingsDialog} from "../../Lib/Utilities";
+import {handlePermissionError, isValidPassword, showMessage} from "../../Lib/Utilities";
 import {CloudinaryCred, imageOptions, photosPermissionTypes} from "../../Lib/AppConstants";
 import UserActions from "../../Redux/UserRedux";
 import {connect} from "react-redux";
@@ -25,6 +24,8 @@ import {ProgressDialog} from "../../Components/ProgressDialog";
 class SingupInfoScreen extends Component {
     constructor(props) {
         super(props)
+        const { currentLocation: {latitude = 0, longitude = 0} = {} } = props || {}
+        console.tron.warn('inside constructor: ' + latitude + ': ' + longitude)
         this.state = {
             firstName: '',
             lastName: '',
@@ -32,35 +33,34 @@ class SingupInfoScreen extends Component {
             password: '',
             picUrl: '',
             uploadingImage: false,
-            locationCoordinates: [0, 0],
+            locationCoordinates: [latitude, longitude],
             acceptedTerms: false
         }
         init(CloudinaryCred.apiKey, CloudinaryCred.secret, CloudinaryCred.name)
     }
 
-    componentDidMount() {
-        Permissions.request('location', {type: 'always'}).then((res) => {
-            if (res === 'authorized') {
-                Geolocation.getCurrentPosition(
-                    (position) => {
-                        const {coords: {latitude, longitude}} = position
-                        let locationCoordinates = []
-                        locationCoordinates.push(latitude)
-                        locationCoordinates.push(longitude)
-                        this.setState({locationCoordinates})
-                    },
-                    (error) => {
-                      //  console.tron.warn({code: error.code, message: error.message})
-                    },
-                    {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000}
-                )
-            } else if (res === 'restricted') {
-                showSettingsDialog(
-                    'Location Permission',
-                    'Allow Ziloo to access this device\'s location?'
-                )
-            }
+    componentWillReceiveProps({currentLocation: newCurrentLocation, error: newError, fetchingLocation}){
+        console.tron.warn('inside will REceivePRps')
+        const { fetchingLocation: oldFetching, currentLocation, error } = this.props
+        console.tron.warn({
+            inReceiveProps: true,
+            locConditioN: String(!fetchingLocation && !_.isEmpty(newCurrentLocation) && !_.isEqual(currentLocation, newCurrentLocation)),
+            errCond: String(!fetchingLocation && fetchingLocation !== oldFetching && newError && newError !== error),
+            newLoc: newCurrentLocation
         })
+        if (!fetchingLocation && fetchingLocation !== oldFetching && newError && newError !== error) {
+            // todo: case while fetching location got an error
+            return
+        }
+
+        if(!fetchingLocation && !_.isEmpty(newCurrentLocation) && !_.isEqual(currentLocation, newCurrentLocation)) {
+            this.setState({locationCoordinates: [newCurrentLocation.latitude, newCurrentLocation.longitude]})
+        }
+    }
+
+    componentDidMount () {
+        console.tron.warn('inside Did Mount')
+        UserActions.getCurrentLocation()
     }
 
     uploadImage = (path) => {
@@ -68,7 +68,7 @@ class SingupInfoScreen extends Component {
         UploadImage(path).then((picUrl) => {
             this.setState({picUrl, uploadingImage: false})
         }).catch(err => {
-          //  console.tron.warn({err})
+            //  console.tron.warn({err})
             this.setState({uploadingImage: false})
         })
     }
@@ -100,7 +100,13 @@ class SingupInfoScreen extends Component {
     saveProfile = () => {
         const {firstName, lastName, userName, password, picUrl, locationCoordinates, acceptedTerms} = this.state
         const {addProfile, user: {id: userId} = {}} = this.props
-        const userInfo = {name: `${firstName} ${lastName}`, username: userName, picUrl, password, locationCoordinates}
+        const userInfo = {
+            name: `${firstName} ${lastName}`,
+            username: userName,
+            picUrl,
+            password,
+            locationCoordinates
+        }
         Keyboard.dismiss()
         if (isEmpty(firstName)) {
             showMessage('Please enter first name')
@@ -110,9 +116,9 @@ class SingupInfoScreen extends Component {
             showMessage('Please enter username')
         } else if (isEmpty(password)) {
             showMessage('Please enter password')
-        } else if(!isValidPassword(password)){
+        } else if (!isValidPassword(password)) {
             showMessage(i18n.t('passwordLength'))
-        }else if (!acceptedTerms) {
+        } else if (!acceptedTerms) {
             showMessage('Please accept terms and conditions')
         } else {
             addProfile(userId, userInfo)
@@ -192,13 +198,13 @@ class SingupInfoScreen extends Component {
     }
 }
 
-const mapStateToProps = ({user: {fetching, user}}) => {
-    return {fetching, user}
+const mapStateToProps = ({user: {fetching, user, currentLocation, error}}) => {
+    return { fetching, user, currentLocation, error }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addProfile: (userId, info) => dispatch(UserActions.addProfile(userId, info))
+        addProfile: (userId, info, isSignup = true) => dispatch(UserActions.addProfile(userId, info, isSignup))
     }
 }
 

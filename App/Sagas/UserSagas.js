@@ -1,4 +1,4 @@
-import {call, put} from 'redux-saga/effects'
+import {call, put, select} from 'redux-saga/effects'
 import UserActions from '../Redux/UserRedux'
 import Api from '../Services/ApiCaller'
 import {Actions} from "react-native-router-flux";
@@ -54,7 +54,7 @@ export function* onVerifyPin(api, {info}) {
         const {res} = yield call(Api.callServer, api.verifyPinCode, info, true)
         if (res && res.isSuccess) {
             yield put(UserActions.verifyPinSuccess(res.data))
-            Actions.profileInfo({type: 'reset', isFromVerifyPin: true})
+            Actions.profileInfo({type: 'reset'})
         } else {
             if (res.error && typeof res.error === "string") {
                 showMessage(res.error)
@@ -71,7 +71,7 @@ export function* onResendPin(api, {info}) {
         const {res} = yield call(Api.callServer, api.resendPinCode, info, true)
         if (res && res.isSuccess) {
             yield put(UserActions.resendPinSuccess(res.data))
-            showMessage('No Pin sent Successfully')
+            showMessage('New Pin sent Successfully')
         } else {
             if (res.error && typeof res.error === "string") {
                 showMessage(res.error)
@@ -84,12 +84,12 @@ export function* onResendPin(api, {info}) {
 }
 
 
-export function* onAddProfile(api, {userId, info}) {
+export function* onAddProfile(api, { userId, info, isSignup }) {
     try {
         const {res} = yield call(Api.callServer, api.addProfile, info, true, userId)
         if (res && res.isSuccess) {
             Actions.login({type: 'reset'})
-            yield put(UserActions.addProfileSuccess(res.data))
+            yield put(UserActions.addProfileSuccess(res.data, isSignup))
         } else {
             if (res.error && typeof res.error === "string") {
                 showMessage(res.error)

@@ -49,8 +49,8 @@ class ProgressDialog extends Component {
   renderLoading = () => {
     const {width, height} = this.state
     const {containerStyle, indicatorStyle} = styles
-    const {size, animating, blocking} = this.props
-    let marginTop = -40
+    const {size, animating, blocking, hasTabs} = this.props
+    let marginTop = -40 - (hasTabs ? 50 : 0)
     if (!blocking) {
             // minus half navbar height to center on screen if not blocking
       marginTop = marginTop - (Platform.OS === 'ios' ? 32 : 27)

@@ -7,6 +7,8 @@ import {photosPermissionTypes} from "./AppConstants";
 import moment from 'moment'
 import OpenSettings from 'react-native-open-settings'
 import RNCalendarEvents from "react-native-calendar-events";
+import Geolocation from "react-native-geolocation-service";
+import LocationServicesDialogBox from 'react-native-android-location-services-dialog-box'
 
 let connectedCallbacks = []
 export const registerConnectionChangeCB = (Callback) => {
@@ -185,4 +187,43 @@ export const createEvent = options => {
     )
 }
 
+export const requestPermissions = (permissionType) => new Promise((resolve, reject) => {
+    try {
+        Permissions.request(permissionType)
+            .then(res => resolve(res))
+
+    } catch (e) {
+        console.tron.warn('error: ' + e.message)
+        reject(e)
+    }
+})
+
+export const getCurrentGPSLocation = () => {
+    return new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+            (position) => {
+                const {coords: {latitude, longitude} = {}} = position
+                resolve({latitude, longitude})
+            },
+            (error) => reject(error),
+            {enableHighAccuracy: true, timeout: 5000}
+        )
+    })
+}
+
+export const getGPSEnabled = () => {
+    if (Platform.OS === 'android') {
+        return LocationServicesDialogBox.checkLocationServicesIsEnabled({
+            message: '<h4>Enable Location Service</h4>This app wants to access your device location.<br/>',
+            ok: 'YES',
+            cancel: 'NO',
+            enableHighAccuracy: false,
+            showDialog: true,
+            openLocationServices: true
+        }).catch((error) => {
+            return Promise.reject(error)
+        })
+    }
+    return Promise.resolve({ios: true})
+}
 

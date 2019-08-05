@@ -95,3 +95,18 @@ export const ActivityActions = [
     color: Colors.green
   }
 ]
+
+
+export const ASYNC_STORAGE_KEYS = {
+    HAS_LOADED_BEFORE: 'HAS_LOADED_BEFORE'
+}
+
+
+export const PERMISSION_RESPONSES = {
+    AUTHORIZED: 'authorized',
+    DENIED: 'denied',
+    RESTRICTED: 'restricted',
+    UNDETERMINED: 'undetermined'
+}
+
+export const ADD_FAMILY_MEMBER_BUTTON_ID = 'addUserBtn'

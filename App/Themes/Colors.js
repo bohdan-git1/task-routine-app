@@ -36,6 +36,8 @@ const colors = {
   border: '#483F53',
   banner: '#5F3E63',
   text: '#E0D7E5',
+    semiTransBlack: 'rgba(0, 0, 0, 0.3)',
+    halfSemiTransBlack: 'rgba(0, 0, 0, 0.15)',
 
   bottomTabbarBG: '#3b5998',
   selectedTabText: '#fb5f26'

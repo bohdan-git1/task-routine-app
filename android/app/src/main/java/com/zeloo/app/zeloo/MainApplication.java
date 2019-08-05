@@ -3,6 +3,7 @@ package com.zeloo.app.zeloo;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.showlocationservicesdialogbox.LocationServicesDialogBoxPackage;
 import com.calendarevents.CalendarEventsPackage;
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
@@ -35,6 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new LocationServicesDialogBoxPackage(),
             new CalendarEventsPackage(),
             new RNFusedLocationPackage(),
             new RNDeviceInfo(),

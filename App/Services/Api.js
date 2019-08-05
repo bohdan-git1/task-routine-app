@@ -46,6 +46,9 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
     const getTaskDetails = (taskId) => api.get(`tasks/${taskId}`)
     const deleteTask = (taskId) => api.delete(`tasks/${taskId}`)
 
+    // family
+    const createFamily = () => api.post('families')
+    const fetchFamily = ({ familyId }) => api.get(`families/${familyId}`)
 
     // ------
     // STEP 3
@@ -70,7 +73,10 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
         addNewTask,
         getAllTasks,
         getTaskDetails,
-        deleteTask
+        deleteTask,
+
+        createFamily,
+        fetchFamily
     }
 }
 

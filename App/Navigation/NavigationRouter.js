@@ -25,6 +25,7 @@ import Defaults from "../Config/ElementDefaults";
 import TextConfig from "../Config/ElementDefaults/defaultStyles";
 import ActivityDetails from "../Containers/ActivityDetails";
 import NavigationButton from "../Components/NavigationButton";
+import HomeTab from "../Containers/Tabs/HomeTab";
 
 export const navigationMiddleware = createReactNavigationReduxMiddleware(state => state.nav)
 Defaults.loadGlobalTextProps(TextConfig.customTextProps)
@@ -151,7 +152,7 @@ export const Routes = Actions.create(
                 icon={TabIcon}
                 title={'Home'}
                 iconName='ios-home'
-                component={TabScreen}
+                component={HomeTab}
                 navigationBarStyle={styles.primaryNavBar}
             />
         </Tabs>
