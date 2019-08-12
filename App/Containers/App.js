@@ -1,7 +1,9 @@
+import { Provider } from 'react-redux'
+import { MenuProvider } from 'react-native-popup-menu';
+
 import '../Config'
 import DebugConfig from '../Config/DebugConfig'
 import React, { Component } from 'react'
-import { Provider } from 'react-redux'
 import RootContainer from './RootContainer'
 import createStore from '../Redux'
 import '../I18n/I18n'
@@ -22,7 +24,9 @@ class App extends Component {
   render () {
     return (
       <Provider store={store}>
-        <RootContainer />
+          <MenuProvider>
+            <RootContainer />
+          </MenuProvider>
       </Provider>
     )
   }

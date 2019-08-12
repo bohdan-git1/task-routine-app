@@ -14,6 +14,7 @@ target 'Zeloo' do
     'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
     'cxxreact',
     #'jschelpers',
+    'RCTAnimation',
     'RCTAnimation', # Needed for FlatList and animations running on native UI thread
     'RCTBlob',
     'RCTPushNotification', # Needed if using push notification
@@ -56,6 +57,10 @@ target 'Zeloo' do
 
   pod 'react-native-calendar-events', :path => '../node_modules/react-native-calendar-events'
 
+
+  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
+
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
 end
 post_install do |installer|

@@ -3,6 +3,8 @@ package com.zeloo.app.zeloo;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 import com.showlocationservicesdialogbox.LocationServicesDialogBoxPackage;
 import com.calendarevents.CalendarEventsPackage;
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
@@ -36,6 +38,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new AsyncStoragePackage(),
+            new ReactNativeContacts(),
             new LocationServicesDialogBoxPackage(),
             new CalendarEventsPackage(),
             new RNFusedLocationPackage(),
