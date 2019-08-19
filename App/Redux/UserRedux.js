@@ -1,4 +1,5 @@
 import {createActions, createReducer} from 'reduxsauce'
+import * as _ from 'lodash'
 import Immutable from 'seamless-immutable'
 
 /* ------------- Types and Action Creators ------------- */
@@ -50,22 +51,29 @@ export const INITIAL_STATE = Immutable({
 
 // SingUp
 export const signUpRequest = (state) => state.merge({fetching: true})
-export const signUpSuccess = (state, {user}: Object) => state.merge({fetching: false, error: null, user})
+export const signUpSuccess = (state, {user}) => state.merge({fetching: false, error: null, user})
 export const signUpFailure = (state) => state.merge({fetching: false, error: true})
 
 // Login
 export const loginRequest = (state) => state.merge({fetching: true})
-export const loginSuccess = (state, {user}: Object) => state.merge({fetching: false, error: null, user})
+export const loginSuccess = (state, {user}) => {
+    const { user: stateUser = {} } = state
+    let newUser = user
+    if (!_.isEmpty(stateUser) && stateUser.id === user.id) {
+        newUser.familyId = (newUser.familyId || stateUser.familyId)
+    }
+    return state.merge({fetching: false, error: null, user: newUser})
+}
 export const loginFailure = (state) => state.merge({fetching: false, error: true})
 
 // Verify PIN
 export const verifyPinRequest = (state) => state.merge({fetching: true})
-export const verifyPinSuccess = (state, {user}: Object) => state.merge({fetching: false, error: null, user})
+export const verifyPinSuccess = (state, {user}) => state.merge({fetching: false, error: null, user})
 export const verifyPinFailure = (state) => state.merge({fetching: false, error: true})
 
 // Resend PIN
 export const resendPinRequest = (state) => state.merge({fetching: true})
-export const resendPinSuccess = (state, {user}: Object) => state.merge({fetching: false, error: null, user})
+export const resendPinSuccess = (state, {user}) => state.merge({fetching: false, error: null, user})
 export const resendPinFailure = (state) => state.merge({fetching: false, error: true})
 
 // Resend PIN
@@ -83,7 +91,7 @@ export const getCurrentLocationFailure = (state, {error}) => (
     state.merge({fetchingLocation: false, error})
 )
 
-export const logoutUser = (state: Object) => {
+export const logoutUser = (state) => {
     return state.merge({...INITIAL_STATE})
 }
 

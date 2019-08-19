@@ -1,3 +1,4 @@
+import { Platform } from 'react-native'
 import Fonts from './Fonts'
 import Metrics from './Metrics'
 import Colors from './Colors'
@@ -100,6 +101,25 @@ const ApplicationStyles = {
         shadowOpacity: 0.6,
         shadowRadius: 5,
         elevation: 3
+    },
+    imageInitialsContainer: {
+        width: 75,
+        height: 75,
+        borderRadius: 75/2,
+        overflow: 'hidden',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: Colors.themeColor
+    },
+    imageInitials: {
+        fontSize: Fonts.size.h5,
+        color: Colors.snow,
+        textAlign: 'center',
+        ...Platform.select({
+            ios: {
+                paddingTop: Metrics.smallMargin
+            }
+        })
     }
 }
 

@@ -5,6 +5,7 @@ const {StatusBarManager} = NativeModules;
 
 // Used via Metrics.baseMargin
 const metrics = {
+    tabbarHeight: 55,
     marginHorizontal: 10,
     marginVertical: 10,
     marginFifteen: 15,
@@ -14,6 +15,10 @@ const metrics = {
     marginThirty: 30,
     fourty: 40,
     doubleSection: 50,
+    seventy: 70,
+    hundred: 100,
+    hundredTen: 110,
+    hundredTwenty: 120,
     doubleBaseMargin: 20,
     horizontalLineHeight: 1,
     screenWidth: width < height ? width : height,

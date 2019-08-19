@@ -52,6 +52,7 @@ class CreateActivity extends Component {
     addNewTask = () => {
         const {addNewTaskReq} = this.props
         const {name, locationName, date, fromTime, toTime, budget, category, priority, locationCoordinates, note, syncCalendar, invites} = this.state
+        console.tron.warn('priorty' + priority)
         const task = {
             name,
             locationName,
@@ -62,7 +63,7 @@ class CreateActivity extends Component {
             note,
             folderId: 32,
             category,
-            priority: Priority_Types[priority]['type'],
+            priority: Priority_Types[priority-1]['type'],
             invites,
             locationCoordinates
         }

@@ -1,4 +1,6 @@
+import { Platform } from 'react-native'
 import {Colors, Fonts} from '../../Themes'
+import Metrics from "../../Themes/Metrics";
 
 export default {
   customTextInputProps: {
@@ -13,7 +15,10 @@ export default {
     style: {
       fontSize: Fonts.size.regular,
       fontFamily: Fonts.type.regular,
-      color: Colors.black
+      color: Colors.black,
+        ...Platform.select({
+            paddingTop: Metrics.smallMargin
+        })
     }
   }
 }

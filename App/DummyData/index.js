@@ -1,48 +1,26 @@
-export const CalendarData = {
-    '2019-07-10': [
-        {
-            id: 1,
-            dateTime: Date.now(),
-            type: 'Local',
-            title: 'Meal Prep',
-            location: '4113 W Johnson Cir Atlanta, GA, United States',
-            location2: '4113 W Johnson Cir\nAtlanta, GA, United States'
-        },
-    ],
-    '2019-07-11': [
-        {
-            id: 2,
-            dateTime: Date.now(),
-            type: 'Local',
-            title: 'Meal Prep',
-            location: '4113 W Johnson Cir Atlanta, GA, United States'
-        },
-    ],
-    '2019-07-13': [
-        {
-            id: 2,
-            dateTime: Date.now(),
-            type: 'Local',
-            title: 'Meal Prep',
-            location: '4113 W Johnson Cir Atlanta, GA, United States'
-        },
-    ],
-    '2019-07-15': [
-        {
-            id: 3,
-            dateTime: Date.now(),
-            type: 'Local',
-            title: 'Meal Prep',
-            location: '4113 W Johnson Cir Atlanta, GA, United States'
-        },
-    ],
-    '2019-07-20': [
-        {
-            id: 4,
-            dateTime: Date.now(),
-            type: 'Local',
-            title: 'Meal Prep',
-            location: '4113 W Johnson Cir Atlanta, GA, United States'
-        },
-    ]
-}
+export const Budgets = [
+    {
+        id: 1,
+        type: 'Electricity'
+    },
+    {
+        id: 2,
+        type: 'Internet'
+    },
+    {
+        id: 3,
+        type: 'Gas'
+    },
+    {
+        id: 4,
+        type: 'Water'
+    },
+    {
+        id: 5,
+        type: 'Credit Cards'
+    },
+    {
+        id: 6,
+        type: 'Rent'
+    }
+]

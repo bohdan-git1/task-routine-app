@@ -38,7 +38,7 @@ export const INITIAL_STATE = Immutable({
 
 // Add New Task
 export const addNewTask = (state) => state.merge({fetching: true})
-export const addNewTaskSuccess = (state, {task}: Object) => {
+export const addNewTaskSuccess = (state, {task}) => {
     let tasks =Immutable.asMutable(state.tasks || [])
     tasks.unshift(task)
     return state.merge({fetching: false, error: null, tasks})
@@ -47,17 +47,17 @@ export const addNewTaskFailure = (state) => state.merge({fetching: false, error:
 
 // Get All Tasks
 export const getAllTasks = (state) => state.merge({fetching: true})
-export const getAllTasksSuccess = (state, {tasks}: Object) => state.merge({fetching: false, error: null, tasks})
+export const getAllTasksSuccess = (state, {tasks}) => state.merge({fetching: false, error: null, tasks})
 export const getAllTasksFailure = (state) => state.merge({fetching: false, error: true})
 
 // Get Task Details
 export const getTaskDetails = (state) => state.merge({fetching: true})
-export const getTaskDetailsSuccess = (state, {task}: Object) => state.merge({fetching: false, error: null, task})
+export const getTaskDetailsSuccess = (state, {task}) => state.merge({fetching: false, error: null, task})
 export const getTaskDetailsFailure = (state) => state.merge({fetching: false, error: true})
 
 // Delete Task
 export const deleteTask = (state) => state.merge({fetching: true})
-export const deleteTaskSuccess = (state, {taskId}: Object) => {
+export const deleteTaskSuccess = (state, {taskId}) => {
     let tasks = Immutable.asMutable(state.tasks || [])
     tasks = tasks.filter(({id}) => id !== taskId)
     return state.merge({fetching: false, error: null, tasks})

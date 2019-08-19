@@ -61,8 +61,8 @@ target 'Zeloo' do
   pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
-
 end
+
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     if target.name == "React"

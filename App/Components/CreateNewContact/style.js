@@ -1,6 +1,7 @@
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import Metrics from "../../Themes/Metrics";
 import Colors from "../../Themes/Colors";
+import Fonts from "../../Themes/Fonts";
 
 
 export default StyleSheet.create({
@@ -30,7 +31,11 @@ export default StyleSheet.create({
         color: Colors.snow,
         textAlignVertical: 'center',
         textAlign: 'center',
-        paddingTop: Metrics.smallMargin
+        ...Platform.select({
+            ios: {
+                paddingTop: Metrics.smallMargin
+            }
+        }),
     },
     headings: {
         marginTop: Metrics.baseMargin,
@@ -96,5 +101,19 @@ export default StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: Metrics.smallMargin
+    },
+    cancelBtn: {
+        backgroundColor: Colors.transparent,
+        alignSelf: 'center',
+        width: 130,
+        height: 35,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: Metrics.smallMargin
+    },
+    cancelBtnTxt: {
+        color: Colors.gray,
+        fontWeight: 'normal',
+        fontSize: Fonts.size.medium
     }
 })

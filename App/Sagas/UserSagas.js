@@ -1,5 +1,6 @@
 import {call, put, select} from 'redux-saga/effects'
 import UserActions from '../Redux/UserRedux'
+import FolderActions from '../Redux/FolderRedux'
 import Api from '../Services/ApiCaller'
 import {Actions} from "react-native-router-flux";
 import {showMessage} from "../Lib/Utilities";
@@ -43,6 +44,7 @@ export function* onLoginSuccess(api, {user}) {
         const {token = ''} = user || {}
         api.setHeaders({'x-access-token': token})
         Actions.tabbar({type: 'reset'})
+        yield put(FolderActions.getFolders())
     } catch (e) {
         //console.tron.warn(e)
     }

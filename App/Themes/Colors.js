@@ -14,6 +14,8 @@ const colors = {
   yellow: '#f6e880',
   orange: '#d87a3c',
   green: '#6d964e',
+  greenDark: '#c6dbb7',
+  greenLight: '#f3f6e7',
   promptBackground: 'rgba(0,0,0,0.4)',
   transparent: 'rgba(0,0,0,0)',
   gray: '#786f87',
@@ -38,6 +40,7 @@ const colors = {
   text: '#E0D7E5',
     semiTransBlack: 'rgba(0, 0, 0, 0.3)',
     halfSemiTransBlack: 'rgba(0, 0, 0, 0.15)',
+    actionButton: '#d47e4c',
 
   bottomTabbarBG: '#3b5998',
   selectedTabText: '#fb5f26'

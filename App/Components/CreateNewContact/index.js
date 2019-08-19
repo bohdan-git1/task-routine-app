@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Text, TextInput, TouchableOpacity, View} from 'react-native'
+import { Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native'
 import {Menu, MenuOption, MenuOptions, MenuTrigger} from 'react-native-popup-menu';
 import PropTypes from 'prop-types'
 import * as _ from 'lodash'
@@ -11,6 +11,7 @@ import Colors from "../../Themes/Colors";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import RoundedButton from "../RoundedButton";
+import {showErrorMessage} from "../../Lib/Utilities";
 
 
 export const rolesData = [
@@ -34,31 +35,64 @@ export const rolesData = [
 export default class CreateNewContact extends Component {
     static propTypes = {
         onSelectContact: PropTypes.func,
+        headerText: PropTypes.string,
+        onAddContact: PropTypes.func,
+        onCancel: PropTypes.func,
     }
+
+    static defaultProps = {
+        headerText: strings.createNew
+    }
+
     constructor (props) {
         super(props)
-        const { contact: { phoneNumbers: {0: firstItem = {}} = [], name = ''} = {}} = props
-        const { number = '' } = firstItem
+        const { contact: { role = rolesData[0].value, phone = '', name = ''} = {}} = props
         this.state = {
             userName: name,
-            phoneNumber: number
+            phoneNumber: phone,
+            role
         }
     }
 
     componentWillReceiveProps({contact: newContact = {}}) {
         const { contact = {} } = this.props
-        if(newContact && !_.isEqual(contact, newContact)) {
-            const { phoneNumbers: {0: firstItem = {}} = [], name = '' } = newContact
-            const { number = '' } = firstItem
+        if (newContact && !_.isEqual(contact, newContact)) {
+            const { phone = '', name = '' } = newContact
             this.setState({
                 userName: name,
-                phoneNumber: number
+                phoneNumber: phone,
+                role: newContact.role || rolesData[0].value
             })
         }
     }
 
     onCreateNew = () => {
-
+        const { contact = {}, onAddContact } = this.props
+        const { userName, phoneNumber, role } = this.state
+        if (!userName) {
+            Keyboard.dismiss()
+            showErrorMessage(strings.userNameEmpty)
+        } else if (!phoneNumber) {
+            Keyboard.dismiss()
+            showErrorMessage(strings.phoneNumberEmpty)
+        } else if (!role) {
+            Keyboard.dismiss()
+            showErrorMessage('kindly select a role')
+        } else {
+            let newContact = {}
+            if (contact.name !== userName || contact.phone !== phoneNumber) {
+                newContact.name = userName
+                newContact.phone = phoneNumber
+                newContact.role = role
+            } else {
+                const { name, phone, recordID } = contact
+                newContact.name = name
+                newContact.phone = phone
+                newContact.recordID = recordID
+                newContact.role = role
+            }
+            onAddContact(newContact)
+        }
     }
 
     handleSelectContact = () => {
@@ -70,11 +104,12 @@ export default class CreateNewContact extends Component {
 
     render () {
         const { userName, phoneNumber, role = strings.userType } = this.state
+        const { onCancel, headerText} = this.props
         return (
             <View style={[styles.container, ApplicationStyles.shadow]}>
                 <View style={styles.contentContainer}>
                     <View style={styles.headerContainer}>
-                        <Text style={styles.headerText}>Create New</Text>
+                        <Text style={styles.headerText}>{headerText}</Text>
                     </View>
                     <Text style={styles.headings}>{strings.userName}</Text>
                     <TextInput value={userName}
@@ -88,6 +123,7 @@ export default class CreateNewContact extends Component {
                             <Text style={styles.headings}>{strings.phoneNumber}</Text>
                             <TextInput value={phoneNumber}
                                        ref={'phoneNumberRef'}
+                                       onSubmitEditing={this.onCreateNew}
                                        keyboardType={'phone-pad'}
                                        onChangeText={(phoneNumber) => this.setState({ phoneNumber })}
                                        placeholder={strings.enterPhoneNumber}
@@ -121,6 +157,14 @@ export default class CreateNewContact extends Component {
                     <RoundedButton text={strings.add}
                                    buttonContainer={styles.addBtn}
                                    onPress={this.onCreateNew}/>
+
+                    {
+                        onCancel && typeof onCancel === 'function' ? <RoundedButton text={strings.cancel}
+                                    buttonContainer={styles.cancelBtn} btnText={styles.cancelBtnTxt}
+                                    onPress={onCancel}/>
+                            : null
+
+                    }
                 </View>
             </View>
         )

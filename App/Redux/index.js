@@ -10,7 +10,8 @@ export const reducers = combineReducers({
     config: require('./ConfigRedux').reducer,
     user: require('./UserRedux').reducer,
     calendar: require('./CalendarRedux').reducer,
-    family: require('./FamilyRedux').reducer
+    family: require('./FamilyRedux').reducer,
+    folder: require('./FolderRedux').reducer
 })
 
 export default () => {

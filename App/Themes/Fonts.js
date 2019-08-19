@@ -2,7 +2,7 @@ import {Platform} from 'react-native'
 const type = {
   regular:  Platform.OS === 'ios' ? 'Myriad Pro' : 'Myriad_Pro_Regular',
   semiBold: Platform.OS === 'ios' ? 'MyriadPro-Semibold' : 'Myriad_Pro_Semibold',
-  bold: Platform.OS === 'ios' ? 'MyriadPro-BoldSemiExt' : 'MyriadPro-BoldSemiExt'
+  bold: Platform.OS === 'ios' ? 'MyriadPro-BoldSemiExt' : 'Myriad_Pro_Bold'
 }
 
 const size = {

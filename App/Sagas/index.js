@@ -6,6 +6,7 @@ import {StartupTypes} from '../Redux/StartupRedux'
 import {UserTypes} from '../Redux/UserRedux'
 import {CalendarTypes} from '../Redux/CalendarRedux'
 import {FamilyTypes} from "../Redux/FamilyRedux";
+import {FolderTypes} from "../Redux/FolderRedux";
 
 // generator Handlers
 import {onGetCurrentLocation, startup} from './StartupSagas'
@@ -15,6 +16,7 @@ import { onCreateFamily, onFetchFamily } from "./FamilySagas";
 
 //api urls
 import {APP_URL} from "../Lib/AppConstants";
+import {onGetFolders} from "./FolderSagas";
 
 /* ------------- Types ------------- */
 /* ------------- Sagas ------------- */
@@ -48,7 +50,10 @@ export default function* root() {
 
         // Family
         takeLatest(FamilyTypes.CREATE_FAMILY, onCreateFamily, api),
-        takeLatest(FamilyTypes.FETCH_FAMILY, onFetchFamily, api)
+        takeLatest(FamilyTypes.FETCH_FAMILY, onFetchFamily, api),
+
+        //Folders
+        takeLatest(FolderTypes.GET_FOLDERS, onGetFolders, api)
 
     ])
 }
