@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react'
 import {View} from 'react-native'
 import {connect} from 'react-redux'
@@ -28,6 +26,7 @@ import NavigationButton from "../Components/NavigationButton";
 import HomeTab from "../Containers/Tabs/HomeTab";
 import strings from "../Constants/strings";
 import BudgetScreen from "../Containers/BudgetScreen";
+import LocatorScreen from "../Containers/LocatorScreen";
 
 export const navigationMiddleware = createReactNavigationReduxMiddleware(state => state.nav)
 Defaults.loadGlobalTextProps(TextConfig.customTextProps)
@@ -147,7 +146,7 @@ export const Routes = Actions.create(
                 iconName='location-pin'
                 title={'Locator'}
                 IconClass={SimpleLineIcons}
-                component={TabScreen}
+                component={LocatorScreen}
                 navigationBarStyle={styles.primaryNavBar}
             />
             <Scene

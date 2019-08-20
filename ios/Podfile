@@ -61,6 +61,9 @@ target 'Zeloo' do
   pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
+  pod 'react-native-maps', :path => '../node_modules/react-native-maps'
+
 end
 
 post_install do |installer|

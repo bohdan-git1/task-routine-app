@@ -34,7 +34,8 @@ export default StyleSheet.create({
     },
     expenseItem: {
         flex: 1,
-        alignItems: 'center'
+        padding: Metrics.baseMargin,
+        justifyContent: 'center'
     },
     budgetContainer: {
         width: 1,

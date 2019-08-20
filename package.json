@@ -48,6 +48,7 @@
     "react-native-image-crop-picker": "0.24.1",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
     "react-native-linear-gradient": "^2.5.4",
+    "react-native-maps": "0.25.0",
     "react-native-material-dropdown": "^0.11.1",
     "react-native-modal": "^11.2.0",
     "react-native-modal-datetime-picker": "^7.5.0",

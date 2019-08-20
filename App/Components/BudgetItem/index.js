@@ -27,13 +27,13 @@ export default class BudgetItem extends Component {
                     </View>
                     <View style={styles.expenseRow}>
                         <View style={styles.expenseItem}>
-                            <Text style={styles.budget}>Spent</Text>
-                            <Text style={styles.budgetType}>{budget}</Text>
+                            <Text style={styles.budgetType}>SPENT</Text>
+                            <Text style={styles.budget}>{budget}</Text>
                         </View>
                         <View style={styles.budgetContainer}/>
                         <View style={styles.expenseItem}>
-                            <Text style={styles.budget}>BUDGET</Text>
-                            <Text style={styles.budgetType}>{budget}</Text>
+                            <Text style={styles.budgetType}>BUDGET</Text>
+                            <Text style={styles.budget}>{budget}</Text>
                         </View>
                     </View>
             </LinearGradient>
