@@ -34,7 +34,7 @@ export default class FamilyMember extends Component {
         if (id === ADD_FAMILY_MEMBER_BUTTON_ID) {
             itemToRender = (
                 <AntDesign name={'pluscircleo'}
-                           size={65}
+                           size={40}
                            color={Colors.snow}
                            style={styles.addIcon}/>
             )

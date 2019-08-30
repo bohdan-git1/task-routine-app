@@ -103,9 +103,9 @@ const ApplicationStyles = {
         elevation: 3
     },
     imageInitialsContainer: {
-        width: 75,
-        height: 75,
-        borderRadius: 75/2,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
         overflow: 'hidden',
         alignItems: 'center',
         justifyContent: 'center',

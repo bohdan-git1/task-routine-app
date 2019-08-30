@@ -9,6 +9,7 @@ import OpenSettings from 'react-native-open-settings'
 import RNCalendarEvents from "react-native-calendar-events";
 import Geolocation from "react-native-geolocation-service";
 import LocationServicesDialogBox from 'react-native-android-location-services-dialog-box'
+import RNGooglePlaces from "react-native-google-places";
 
 let connectedCallbacks = []
 export const registerConnectionChangeCB = (Callback) => {
@@ -225,5 +226,20 @@ export const getGPSEnabled = () => {
         })
     }
     return Promise.resolve({ios: true})
+}
+
+export const getCurrentLocation = () => {
+    return new Promise((resolve, reject) => {
+        RNGooglePlaces.getCurrentPlace()
+            .then((results) => {
+                const sortedResults = results.sort((a, b) => {
+                    return (a.likelihood > b.likelihood) ? -1 : ((b.likelihood > a.likelihood) ? 1 : 0)
+                })
+                resolve(sortedResults[0])
+            })
+            .catch((error) => {
+                reject(error)
+            });
+    })
 }
 

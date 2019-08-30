@@ -16,22 +16,24 @@ export default class VectorIcon extends Component {
     name: PropTypes.string,
     type: PropTypes.string,
     size: PropTypes.string,
-    style: PropTypes.object
+    style: PropTypes.object,
+    onPress: PropTypes.object
   }
   static defaultProps = {
     name: '',
     type: '',
     size: '',
-    style: {}
+    style: {},
+    onPress: () => {}
   }
 
   render () {
-    const {name, type, size, color, style} = this.props
+    const {name, type, size, color, style, onPress} = this.props
     switch (type) {
       case 'AntDesign':
         return (<AntDesign style={style} name={name} size={size} color={color} />)
       case 'Ionicons':
-        return (<IoniconsIcons style={style} name={name} size={size} color={color} />)
+        return (<IoniconsIcons style={style} name={name} size={size} color={color} onPress={onPress}/>)
       case 'FontAwesome':
         return (<FontAwesomeIcons style={style} name={name} size={size} color={color} />)
       case 'Feather':

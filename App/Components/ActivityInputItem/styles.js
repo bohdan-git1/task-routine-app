@@ -39,5 +39,8 @@ export default StyleSheet.create({
     },
     dropdownOffset: {
         top: 0
+    },
+    iconContainer: {
+
     }
 })

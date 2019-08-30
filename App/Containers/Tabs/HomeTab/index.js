@@ -1,24 +1,22 @@
 import React, {Component} from 'react'
 import {
     Alert,
-    SafeAreaView,
-    ImageBackground,
-    Text,
-    View,
     FlatList,
+    Image,
+    ImageBackground,
+    PermissionsAndroid,
+    Platform,
+    SafeAreaView,
+    ScrollView, StatusBar,
+    Text,
     TextInput,
     TouchableOpacity,
-    Platform,
-    PermissionsAndroid, Image,
-    ScrollView
+    View
 } from 'react-native'
 import * as _ from 'lodash'
-import LinearGradient from 'react-native-linear-gradient';
 import {connect} from "react-redux";
+import ActionSheet from "react-native-actionsheet";
 import ContactsSectionList from "react-native-sectionlist-contacts";
-import ActionButton from 'react-native-action-button';
-import Icon from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import styles from './styles'
 import {ProgressDialog} from "../../../Components/ProgressDialog";
@@ -32,9 +30,9 @@ import ModalComponent from "../../../Components/ModalComponent";
 import strings from "../../../Constants/strings";
 import {showErrorMessage} from "../../../Lib/Utilities";
 import CreateNewContact from "../../../Components/CreateNewContact";
-import Metrics from "../../../Themes/Metrics";
 import FoldersComponent from "../../../Components/FoldersComponent";
 import {Actions} from "react-native-router-flux";
+import ActionButtons from "../../../Components/ActionButtons";
 
 class HomeTab extends Component {
 
@@ -48,6 +46,7 @@ class HomeTab extends Component {
             showContactsList: false,
             showAddFamilyMember: false
         }
+        StatusBar.setBackgroundColor(Colors.primaryColorI)
     }
 
     async componentDidMount() {
@@ -130,7 +129,7 @@ class HomeTab extends Component {
             stateContact
         })
         if (!contact || _.isEmpty(contact)) {
-            Alert.alert('kinldy select a contact first')
+            Alert.alert('kindly select a contact first')
             return
         }
         const prevIndex = selectedContacts.findIndex(item => item.phone === newContact.phone)
@@ -193,7 +192,7 @@ class HomeTab extends Component {
     }
 
     renderCurrentTask = () => {
-        const { currentTask = {} } = this.props
+        const {currentTask = {}} = this.props
         if (_.isEmpty(currentTask)) {
             return <Text style={styles.noTaskText}>{strings.noTaskPlanned}</Text>
         }
@@ -201,10 +200,12 @@ class HomeTab extends Component {
     }
 
     renderActiveRoute = () => {
-        const { activeRoute: {
-            taskName = strings.noTaskAvailable,
-            location = strings.noLocationAvailable
-        } = {} } = this.props
+        const {
+            activeRoute: {
+                taskName = strings.noTaskAvailable,
+                location = strings.noLocationAvailable
+            } = {}
+        } = this.props
         return (
             <>
                 <View style={styles.routeLeftIconContainer}>
@@ -325,9 +326,14 @@ class HomeTab extends Component {
         Actions.createActivity()
     }
 
-    onCreateRoute = () => {
-        // todo: handle create new route
-        Alert.alert('in progress')
+    onFolderActionPressed = (index) => {
+        switch (index){
+            case 0: this.photoAction.show()
+            break
+            case 1: () => {}
+            break
+            default: () => {}
+        }
     }
 
     render() {
@@ -371,13 +377,13 @@ class HomeTab extends Component {
                             }
                         </> : <>
                             <ImageBackground style={[styles.topHeaderImage]}
-                                             source={images.addFamily}>
+                                             source={images.mountainsPurpleBg}>
                                 <View style={styles.contentFlexEnd}>
                                     <Text style={styles.enterFamilyName}>Enter Your Family Name</Text>
                                     <View style={styles.familyNameInputContainer}>
                                         <TextInput value={familyName}
                                                    style={styles.familyNameInput}
-                                                   placeholder={`Your's family`}
+                                                   placeholder={`Yours family`}
                                                    placeholderTextColor={Colors.snow}
                                                    onChangeText={familyName => this.setState({familyName})}/>
                                         <TouchableOpacity style={styles.goBtnContainer}
@@ -401,7 +407,8 @@ class HomeTab extends Component {
                     {this.renderCurrentRoutePanel()}
                     <FoldersComponent containerStyles={styles.foldersComponentContainer}
                                       folders={folders}
-                                      onAddFolder={this.onAddFolder} />
+                                      onPressFolder={() => this.folderActions.show()}
+                                      onAddFolder={this.onAddFolder}/>
                 </ScrollView>
                 <ModalComponent isModalVisible={showContactsList}
                                 closeModal={this.onHideContactList}>
@@ -409,38 +416,31 @@ class HomeTab extends Component {
                         <ContactsSectionList sectionListData={contacts} renderItem={this.renderContactItem}/>
                     </SafeAreaView>
                 </ModalComponent>
-                <ActionButton buttonColor={Colors.actionButton}
-                              backdrop={<View style={styles.actionBtnBackdrop}/>}
-                              buttonTextStyle={styles.plusText}>
-                    <ActionButton.Item buttonColor={Colors.actionButton}
-                                       title={strings.createTask}
-                                       size={Metrics.doubleSection}
-                                       textStyle={styles.buttonText}
-                                       textContainerStyle={styles.textContainer}
-                                       onPress={this.onCreateTask}>
-                        <Icon name="md-create"
-                              style={styles.actionButtonIcon} />
-                    </ActionButton.Item>
-                    <ActionButton.Item buttonColor={Colors.actionButton}
-                                       title={strings.createRoute}
-                                       size={Metrics.doubleSection}
-                                       textStyle={styles.buttonText}
-                                       textContainerStyle={styles.textContainer}
-                                       onPress={this.onCreateRoute}>
-                        <MaterialIcons name="my-location"
-                                       style={styles.actionButtonIcon} />
-                    </ActionButton.Item>
-                </ActionButton>
+                <ActionButtons onPressActionButton1={this.onCreateTask} onPressActionButton2={Actions.createRoute}/>
+                <ActionSheet
+                    cancelButtonIndex={3}
+                    title={strings.sureEditFolder}
+                    ref={o => this.folderActions = o}
+                    onPress={this.onFolderActionPressed}
+                    options={[strings.editFolder, strings.renameFolder, strings.deleteFolder, strings.cancel]}
+                />
+                 <ActionSheet
+                    cancelButtonIndex={2}
+                    title={strings.chooseIcon}
+                    ref={o => this.photoAction = o}
+                    options={[strings.takePhoto, strings.chooseFromLibrary, strings.cancel]}
+                />
             </View>
         )
     }
 }
 
-const mapStateToProps = ({   config: {contacts = []} = {},
+const mapStateToProps = ({
+                             config: {contacts = []} = {},
                              user: {user, isSignup} = {},
                              family: {fetching, family} = {},
                              folder: {folders = [], hasNoMore: noMoreFolders = false} = {}
-                        }) => {
+                         }) => {
     return {
         user, isSignup, fetching, family, contacts, folders, noMoreFolders
     }

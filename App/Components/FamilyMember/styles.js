@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native'
 import Colors from "../../Themes/Colors";
 import Metrics from "../../Themes/Metrics";
 
-const familyDimens = 75
+const familyDimens = 50
 export default StyleSheet.create({
     container: {
         width: familyDimens,

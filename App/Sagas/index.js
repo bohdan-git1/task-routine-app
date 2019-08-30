@@ -7,6 +7,7 @@ import {UserTypes} from '../Redux/UserRedux'
 import {CalendarTypes} from '../Redux/CalendarRedux'
 import {FamilyTypes} from "../Redux/FamilyRedux";
 import {FolderTypes} from "../Redux/FolderRedux";
+import {RouteTypes} from "../Redux/RouteRedux";
 
 // generator Handlers
 import {onGetCurrentLocation, startup} from './StartupSagas'
@@ -17,6 +18,7 @@ import { onCreateFamily, onFetchFamily } from "./FamilySagas";
 //api urls
 import {APP_URL} from "../Lib/AppConstants";
 import {onGetFolders} from "./FolderSagas";
+import {onCreateRoute, onGetRoutes} from "./RouteSagas";
 
 /* ------------- Types ------------- */
 /* ------------- Sagas ------------- */
@@ -53,7 +55,11 @@ export default function* root() {
         takeLatest(FamilyTypes.FETCH_FAMILY, onFetchFamily, api),
 
         //Folders
-        takeLatest(FolderTypes.GET_FOLDERS, onGetFolders, api)
+        takeLatest(FolderTypes.GET_FOLDERS, onGetFolders, api),
+
+        //Route
+        takeLatest(RouteTypes.CREATE_ROUTE, onCreateRoute, api),
+        takeLatest(RouteTypes.GET_ROUTES, onGetRoutes, api)
 
     ])
 }

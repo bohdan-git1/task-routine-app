@@ -1,5 +1,5 @@
-import {Dimensions, StyleSheet} from 'react-native'
-import {Fonts, Colors, Metrics, ApplicationStyles} from '../../Themes/'
+import {StyleSheet} from 'react-native'
+import {ApplicationStyles, Colors, Fonts, Metrics} from '../../Themes/'
 
 export default StyleSheet.create({
     ...ApplicationStyles.screen,
@@ -10,7 +10,7 @@ export default StyleSheet.create({
         color: Colors.snow,
         padding: Metrics.baseMargin,
         fontSize: Fonts.size.regular,
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.primaryColorI,
     },
     currentLocation: {
         height: 50,

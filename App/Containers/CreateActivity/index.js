@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import RNGooglePlaces from 'react-native-google-places';
-import {Text, TouchableOpacity, View, StatusBar, Keyboard} from 'react-native'
+import {isEmpty} from 'lodash'
+import {Keyboard, StatusBar, Text, TouchableOpacity, View} from 'react-native'
 import DateTimePicker from "react-native-modal-datetime-picker";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import moment from "moment";
@@ -11,7 +11,7 @@ import styles from './styles'
 import {Colors} from "../../Themes";
 import Input from "../../Components/Input";
 import CheckBox from "../../Components/CheckBox";
-import {FormatDateTime} from "../../Lib/Utilities";
+import {FormatDateTime, getCurrentLocation} from "../../Lib/Utilities";
 import VectorIcon from "../../Components/VectorIcon";
 import GradientView from "../../Components/GradientView";
 import RoundedButton from "../../Components/RoundedButton";
@@ -23,6 +23,7 @@ import InviteDialog from "../../Components/InviteDialog";
 import {ProgressDialog} from "../../Components/ProgressDialog";
 import ActivityInputItem from "../../Components/ActivityInputItem";
 import BudgetDialog from "../../Components/BudgetDialog";
+import PlacePicker from "../PlacePicker";
 
 class CreateActivity extends Component {
     constructor(props) {
@@ -44,7 +45,10 @@ class CreateActivity extends Component {
             showFolderDialog: false,
             showInviteDialog: false,
             showBudgetDialog: false,
-            invites: []
+            invites: [],
+            currentLocation: {},
+            fetchingCurrentLocation: false,
+            showPlacePicker: false
         }
         StatusBar.setBackgroundColor(Colors.primaryColorI)
     }
@@ -52,7 +56,6 @@ class CreateActivity extends Component {
     addNewTask = () => {
         const {addNewTaskReq} = this.props
         const {name, locationName, date, fromTime, toTime, budget, category, priority, locationCoordinates, note, syncCalendar, invites} = this.state
-        console.tron.warn('priorty' + priority)
         const task = {
             name,
             locationName,
@@ -71,15 +74,7 @@ class CreateActivity extends Component {
     }
 
     openPlacePicker = () => {
-        RNGooglePlaces.openAutocompleteModal()
-            .then((place) => {
-                const {address, location: {latitude = '', longitude = ''} = {}} = place
-                const locationCoordinates = [0, 0]
-                locationCoordinates[0] = latitude
-                locationCoordinates[1] = longitude
-                this.setState({locationName: address || '', locationCoordinates})
-            })
-            .catch(error => console.log(error.message));  // error is a Javascript Error object
+        this.setState({currentLocation: {}, showPlacePicker: true})
     }
 
     onConfirmDate = (date) => {
@@ -107,10 +102,24 @@ class CreateActivity extends Component {
         this.setState({budget, showBudgetDialog: false})
     }
 
+    getCurrentLocation = () => {
+        this.setState({fetchingCurrentLocation: true})
+        getCurrentLocation().then(currentLocation => {
+            this.setState({currentLocation, fetchingCurrentLocation: false})
+        }).catch((error) => {
+            this.setState({fetchingCurrentLocation: false})
+        })
+    }
+
+    onSelectedPlace = (location) => {
+        this.setState({showPlacePicker: false, locationName: location.address})
+    }
+
     render() {
         const {fetching} = this.props
-        const {name, locationName, showDatePicker, date, toTime, fromTime, pickerKey, budget, category, priority, showFolderDialog, note, syncCalendar, showInviteDialog, showBudgetDialog} = this.state
+        const {currentLocation: {address: currentLocation = ''}, showPlacePicker, name, locationName, showDatePicker, date, toTime, fromTime, pickerKey, budget, category, priority, showFolderDialog, note, syncCalendar, showInviteDialog, showBudgetDialog, fetchingCurrentLocation} = this.state
         const mode = pickerKey === 'date' ? 'date' : 'time'
+        const location = isEmpty(currentLocation) ? locationName : currentLocation
         return (
             <GradientView gradientStyles={styles.gradientStyles}>
                 <KeyboardAwareScrollView
@@ -133,10 +142,12 @@ class CreateActivity extends Component {
 
                     <ActivityInputItem
                         label='Location'
-                        value={locationName}
+                        value={location}
                         iconName='my-location'
                         iconType='MaterialIcons'
                         onPress={this.openPlacePicker}
+                        onIconPress={this.getCurrentLocation}
+                        fetchingCurrentLocation={fetchingCurrentLocation}
                     />
 
                     <View style={styles.dateContainer}>
@@ -268,6 +279,7 @@ class CreateActivity extends Component {
                     onCancel={() => this.setState({showBudgetDialog: false})}
                     onDone={this.saveBudget}
                 />}
+                {showPlacePicker && <PlacePicker onPlacePicked={this.onSelectedPlace}/> }
                 <ProgressDialog hide={!fetching}/>
             </GradientView>
         )

@@ -8,7 +8,7 @@ export default StyleSheet.create({
     },
     topHeaderImage: {
         paddingTop: Metrics.baseMargin,
-        height: 3.7 * Metrics.doubleSection,
+        height: 2 * Metrics.doubleSection,
         width: Dimensions.get('window').width,
         paddingHorizontal: Metrics.marginFifteen
     },
@@ -35,9 +35,7 @@ export default StyleSheet.create({
     familyMembersContainer: {
         flex: 1,
         flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.offWhiteII
+        alignItems: 'center'
     },
     expensesRow: {
       flexDirection: 'row'
@@ -45,17 +43,16 @@ export default StyleSheet.create({
     categoryBar: {
         padding: 12.5,
         flexDirection: 'row',
-        backgroundColor: Colors.purple,
+        margin: Metrics.smallMargin,
         justifyContent: 'space-between',
-        marginVertical: Metrics.smallMargin,
-        marginHorizontal: Metrics.baseMargin
+        backgroundColor: Colors.primaryColorI,
     },
     categoryText: {
         color: Colors.snow,
         fontSize: Fonts.size.h6
     },
     plusIcon: {
-        fontSize: 30,
+        fontSize: 25,
         color: Colors.snow
     },
     date: {

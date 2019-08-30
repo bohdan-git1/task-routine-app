@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {Text, TouchableOpacity, View, TextInput} from 'react-native'
+import {Text, TouchableOpacity, View, TextInput, ActivityIndicator} from 'react-native'
 
 import styles from './styles'
 import VectorIcon from "../VectorIcon";
@@ -19,6 +19,7 @@ export default class ActivityInputItem extends Component {
         onChangeText: PropTypes.function,
         onChangeCategory: PropTypes.function,
         type: PropTypes.string,
+        fetchingCurrentLocation: PropTypes.boolean
     }
     static defaultProps = {
         label: '',
@@ -26,9 +27,15 @@ export default class ActivityInputItem extends Component {
         type: '',
         iconName: 'my-location',
         iconType: 'MaterialIcons',
-        onPress: () => {},
-        onChangeText: () => {},
-        onChangeCategory: () => {}
+        onPress: () => {
+        },
+        onChangeText: () => {
+        },
+        onChangeCategory: () => {
+        },
+        onIconPress: () => {
+        },
+        fetchingCurrentLocation: false
     }
 
 
@@ -53,13 +60,19 @@ export default class ActivityInputItem extends Component {
     }
 
     render() {
-        const {onPress, label, iconName, iconType} = this.props
+        const {onPress, label, iconName, iconType, onIconPress, fetchingCurrentLocation} = this.props
         return (
             <TouchableOpacity onPress={onPress} style={styles.mainContainer}>
                 <Text style={styles.label}>{label}</Text>
                 <View style={styles.valueContainer}>
                     {this.renderInput()}
-                    <VectorIcon name={iconName} type={iconType} style={styles.icon}/>
+                    {fetchingCurrentLocation ?
+                        <ActivityIndicator animating={true} color={Colors.themeColor} size={'small'}/> :
+                        <TouchableOpacity style={styles.iconContainer}
+                                          disabled={!onIconPress}
+                                          onPress={onIconPress}>
+                            <VectorIcon name={iconName} type={iconType} style={styles.icon}/>
+                        </TouchableOpacity>}
                 </View>
             </TouchableOpacity>
         )

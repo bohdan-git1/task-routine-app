@@ -53,6 +53,10 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
     //folders
     const getFolders = () => api.get('folders')
 
+    //Route
+    const createRoute = (route) => api.post('routes', route)
+    const getRoutes = (params) => api.get('routes', params)
+
     // ------
     // STEP 3
     // ------
@@ -81,7 +85,9 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
         createFamily,
         fetchFamily,
 
-        getFolders
+        getFolders,
+        createRoute,
+        getRoutes
     }
 }
 

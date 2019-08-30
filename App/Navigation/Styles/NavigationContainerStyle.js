@@ -97,5 +97,9 @@ export default {
   },
   emptyRightButton: {
     width: 40
+  },
+  selectFamily: {
+    color: Colors.snow,
+    padding: Metrics.baseMargin
   }
 }

@@ -48,9 +48,6 @@ class BudgetScreen extends Component {
                                   renderItem={this.renderFamilyMember} horizontal
                                   extraData={this.props.family}/>
                     </View>
-                    <Text onPress={() => this.setState({showDatePicker: true})} style={styles.date}>
-                        {moment(date).format('MMM DD, YYYY')}
-                    </Text>
                 </ImageBackground>
                 <BudgetHeadingItem item={{type: 'TOTAL REMAINING', budget: '$3780.00'}} image={Images.budgetToSpent}/>
                 <View style={styles.expensesRow}>
@@ -74,9 +71,8 @@ class BudgetScreen extends Component {
                     data={Budgets}
                     extraData={Budgets}
                     renderItem={this.renderItem}
-                    ListHeaderComponent={this.renderListHeader}
                     keyExtractor={item => String(item.id)}
-                    contentContainerStyle={styles.contentContainerStyle}
+                    ListHeaderComponent={this.renderListHeader}
                     columnWrapperStyle={{justifyContent: 'space-between'}}
                 />
                 <DateTimePicker

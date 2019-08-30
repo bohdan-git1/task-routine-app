@@ -16,7 +16,7 @@ export default StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        marginLeft: Metrics.smallMargin,
+        marginLeft: Metrics.smallMargin
     },
     yellowLine: {
         width: 8,
@@ -28,11 +28,15 @@ export default StyleSheet.create({
         borderRightColor: Colors.frost,
         paddingVertical: Metrics.marginFifteen,
         paddingHorizontal: Metrics.smallMargin,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.frost
     },
     titleContainer: {
         height: 120,
         padding: Metrics.marginFifteen,
-        width: Metrics.screenWidth - 100
+        width: Metrics.screenWidth - 100,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.frost
     },
     title: {
         fontWeight: 'bold',

@@ -6,11 +6,11 @@ export default StyleSheet.create({
     gradientContainer: {
         flex: 1,
         padding: Metrics.baseMargin,
-        marginVertical: Metrics.smallMargin,
-        marginHorizontal: Metrics.baseMargin
+        margin: Metrics.smallMargin,
     },
     remaining: {
-        color: Colors.snow
+        color: Colors.snow,
+        fontSize: Fonts.size.small
     },
     budgetRow: {
         flexDirection: 'row',
@@ -21,7 +21,7 @@ export default StyleSheet.create({
     },
     budget: {
         color: Colors.snow,
-        fontSize: Fonts.size.h5
+        fontSize: Fonts.size.h6
     },
     budgetType: {
         color: Colors.snow,

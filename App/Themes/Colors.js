@@ -14,12 +14,15 @@ const colors = {
   yellow: '#f6e880',
   orange: '#d87a3c',
   green: '#6d964e',
+  greenXDark: '#65b74a',
   greenDark: '#c6dbb7',
   greenLight: '#f3f6e7',
   promptBackground: 'rgba(0,0,0,0.4)',
   transparent: 'rgba(0,0,0,0)',
   gray: '#786f87',
   grayI: '#848587',
+  grayII: '#b1b0ac',
+  grayIII: '#767876',
   silver: '#F7F7F7',
   error: 'rgba(200, 0, 0, 0.8)',
   ricePaper: 'rgba(255,255,255, 0.75)',
@@ -41,6 +44,7 @@ const colors = {
     semiTransBlack: 'rgba(0, 0, 0, 0.3)',
     halfSemiTransBlack: 'rgba(0, 0, 0, 0.15)',
     actionButton: '#d47e4c',
+    veryLightGrey: '#f4f1ee',
 
   bottomTabbarBG: '#3b5998',
   selectedTabText: '#fb5f26'

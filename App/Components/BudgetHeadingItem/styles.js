@@ -7,7 +7,7 @@ export default StyleSheet.create({
         flex: 1,
         padding: Metrics.baseMargin,
         marginVertical: Metrics.smallMargin,
-        marginHorizontal: Metrics.baseMargin
+        marginHorizontal: Metrics.smallMargin
     },
     type: {
         color: Colors.snow,

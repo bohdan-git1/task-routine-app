@@ -32,6 +32,7 @@ const metrics = {
         small: 20,
         tabIcon: 25,
         medium: 30,
+        mediumI: 35,
         large: 45,
         xl: 50
     },

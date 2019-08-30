@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, FlatList, Image } from 'react-native'
+import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native'
 import PropTypes from 'prop-types'
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -12,20 +12,26 @@ export default class FoldersComponent extends Component {
     static propTypes = {
         containerStyles: PropTypes.object,
         onAddFolder: PropTypes.func,
-        folders: PropTypes.array
+        folders: PropTypes.array,
+        onPressFolder: PropTypes.func
+    }
+
+    static defaultProps = {
+        onPressFolder: () => {}
     }
 
     renderItem = ({item, index}) => {
+        const {onPressFolder} = this.props
         const {id, name, imgUrl, noOfTask, noOfTaskCompleted} = item
         return (
-            <View style={styles.folderItemContainer}>
+            <TouchableOpacity onPress={onPressFolder} style={styles.folderItemContainer}>
                 <View style={styles.folderHeader}>
                     <Image source={{uri: imgUrl}} style={styles.folderImage}/>
                     <Text style={styles.folderName}>{name}</Text>
                 </View>
                 <Text style={styles.tasksStatusText}>{noOfTaskCompleted} Tasks Completed</Text>
                 <Text  style={styles.tasksStatusText}>{noOfTask} Total Tasks</Text>
-            </View>
+            </TouchableOpacity>
         )
     }
 
