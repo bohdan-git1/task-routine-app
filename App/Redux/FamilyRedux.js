@@ -34,7 +34,6 @@ export const createFamilyFailure = (state) => state.merge({fetching: false, erro
 
 // fetchFamily
 export const fetchFamilyReq = (state, {familyId}) => {
-    console.tron.warn('familyReq: ' + String(familyId === state.family.id))
     const family = familyId === state.family.id ? state.family : {}
     return state.merge({ fetching: true, family })
 }

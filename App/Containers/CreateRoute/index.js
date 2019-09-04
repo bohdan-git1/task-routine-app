@@ -9,10 +9,10 @@ import strings from "../../Constants/strings";
 import VectorIcon from "../../Components/VectorIcon";
 import RouteItem from "../../Components/RouteItem";
 import CalendarActions from "../../Redux/CalendarRedux";
-import RouteActions from "../../Redux/RouteRedux";
 import {connect} from "react-redux";
 import AnimatedAlert from "../../Components/AnimatedAlert";
 import {ProgressDialog} from "../../Components/ProgressDialog";
+import {Actions} from "react-native-router-flux";
 
 class CreateRoute extends Component {
     constructor(props) {
@@ -26,6 +26,7 @@ class CreateRoute extends Component {
             noOfTask: '',
             tasks,
             taskId: [],
+            selectedTasks: [],
             pickerKey: 'date'
         }
     }
@@ -35,15 +36,18 @@ class CreateRoute extends Component {
         getAllTaskReq()
     }
 
-    onSelectRoute = (routeId) => {
-        let {taskId = []} = this.state
-        if (taskId.includes(routeId.toString())) {
+    onSelectRoute = (item) => {
+        const {id: routeId} = item || {}
+        let {taskId = [], selectedTasks} = this.state
+        if (taskId.includes(String(routeId))) {
             const index = taskId.findIndex((item) => item === routeId)
             taskId.splice(index, 1)
+            selectedTasks = selectedTasks.filter(({id}) => { return String(id) !== String(routeId)})
         } else {
-            taskId.push(routeId.toString())
+            taskId.push(String(routeId))
+            selectedTasks.push(item)
         }
-        this.setState({taskId})
+        this.setState({taskId, selectedTasks})
     }
 
     onConfirmedDate = (pickedDate) => {
@@ -52,19 +56,19 @@ class CreateRoute extends Component {
     }
 
     createNewRoute = () => {
-        const {createRoute} = this.props
-        const {date, noOfTask, name, taskId} = this.state
+        const {date, name, selectedTasks} = this.state
         const stepCoordinates = [
-            30.7333148,
-            76.7794179
+            29.653812,
+            70.591211
         ]
-        createRoute({date, noOfTask: taskId.length, taskId, name, stepCoordinates})
+        const route = {date, name, selectedTasks, stepCoordinates}
+        Actions.selectTaskOrder({route})
     }
 
 
     renderRouteItem = ({item}) => {
         const {taskId} = this.state
-        return <RouteItem item={item} selectedRoutes={taskId} onPress={() => this.onSelectRoute(item.id)}/>
+        return <RouteItem item={item} selectedRoutes={taskId} onPress={() => this.onSelectRoute(item)}/>
     }
 
     renderRouteData = () => {
@@ -95,7 +99,7 @@ class CreateRoute extends Component {
                     <View style={styles.dateInput}>
                         <Text>No of Events</Text>
                         <View style={styles.noOfEventsContainer}>
-                            <Text>{noOfTasks.toString()}</Text>
+                            <Text>{noOfTasks}</Text>
                         </View>
                     </View>
                 </View>
@@ -104,7 +108,7 @@ class CreateRoute extends Component {
     }
 
     render() {
-        const {showDatePicker, filterDate, tasks} = this.state
+        const {showDatePicker, filterDate, tasks, selectedTasks} = this.state
         const {fetching, fetchingEvent} = this.props
         const filteredTasks = tasks.filter(({date}) => moment(date).format('DD-MM-YYYY') === moment(filterDate).format('DD-MM-YYYY'))
         return (
@@ -148,7 +152,6 @@ const mapStateToProps = ({calendar: {fetching: fetchingEvent, tasks = []}, route
 const mapDispatchToProps = (dispatch) => {
     return {
         getAllTaskReq: (params) => dispatch(CalendarActions.getAllTasks(params)),
-        createRoute: (route) => dispatch(RouteActions.createRoute(route))
     }
 }
 

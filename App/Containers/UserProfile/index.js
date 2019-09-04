@@ -70,7 +70,6 @@ class UserProfile extends Component {
 }
 
 const mapStateToProps = ({user: { user } = {}}) => {
-  console.tron.warn(user)
   return {
       user
   }

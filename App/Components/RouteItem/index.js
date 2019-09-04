@@ -28,7 +28,7 @@ export default class RouteItem extends Component {
         const {id, fromTime = moment(), type = '', locationName = 'Building No 1', name = 'MC'} = item || {}
         return (
             <TouchableOpacity activeOpacity={0.8} onPress={onPress}
-                              style={[styles.mainContainer, selectedRoutes.includes(id.toString()) && {backgroundColor: Colors.frost}]}>
+                              style={[styles.mainContainer, selectedRoutes.includes(String(id)) && {backgroundColor: Colors.frost}]}>
                 <View style={styles.yellowLine}/>
                 <View style={styles.rightContainer}>
                     <View style={styles.timeContainer}>
@@ -43,7 +43,7 @@ export default class RouteItem extends Component {
                             <VectorIcon name={'location-pin'} type={'SimpleLineIcons'} style={styles.locationIcon}/>
                             <Text numberOfLines={2} style={styles.location}>{locationName}</Text>
                         </View>
-                        {selectedRoutes.includes(id.toString()) ?
+                        {selectedRoutes.includes(String(id)) ?
                             <VectorIcon name={'check'} type={'FontAwesome'} style={styles.checkIcon}/> :
                             <View style={styles.dot}/>}
                     </View>

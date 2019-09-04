@@ -4,7 +4,6 @@ import Api from '../Services/ApiCaller'
 import {showMessage} from "../Lib/Utilities";
 
 export function* onCreateFamily(api, { name, invites }) {
-    console.tron.warn({name, invites})
     try {
         const { res } = yield call(Api.callServer, api.createFamily, { name, invites }, true)
         if (res && res.isSuccess) {
@@ -23,7 +22,6 @@ export function* onCreateFamily(api, { name, invites }) {
 export function* onFetchFamily (api, { familyId }) {
     try {
         const { res } = yield call(Api.callServer, api.fetchFamily, { familyId }, true)
-        console.tron.warn({ onFetchFamilyRes: res })
 
         if (res && res.isSuccess) {
             yield put(FamilyActions.fetchFamilySuccess(res.data))

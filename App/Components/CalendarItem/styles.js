@@ -71,5 +71,20 @@ export default StyleSheet.create({
     carIcon: {
         fontSize: 22,
         color: Colors.black
+    },
+    markDoneBtnContainer: {
+        alignSelf: 'flex-end',
+        padding: Metrics.baseMargin
+    },
+    markDoneTxt: {
+        fontSize: Fonts.size.small,
+        color: Colors.purpleII,
+        fontFamily: Fonts.type.bold
+    },
+    completeTxt: {
+        fontSize: Fonts.size.small,
+        color: Colors.greenXDark,
+        fontFamily: Fonts.type.bold
     }
+
 })

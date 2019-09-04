@@ -34,6 +34,8 @@ import CreateRoute from "../Containers/CreateRoute";
 import SelectTaskOrder from "../Containers/SelectTaskOrder";
 import UserProfile from '../Containers/UserProfile';
 import FamilyMembers from '../Containers/FamilyMembers';
+import TestLocation from "../Containers/TestLocation";
+import NavigationToTask from "../Components/NavigationToTask";
 
 export const navigationMiddleware = createReactNavigationReduxMiddleware(state => state.nav)
 Defaults.loadGlobalTextProps(TextConfig.customTextProps)
@@ -106,6 +108,15 @@ export const Routes = Actions.create(
                 navigationBarStyle={styles.primaryNavBar}
                 renderRightButton={<View style={styles.emptyRightButton}/>}
             />
+            <Scene
+                key='navigateToTask'
+                title='Turn by Turn Navigation'
+                component={NavigationToTask}
+                renderLeftButton={<BackButton />}
+                titleStyle={styles.navBarTextTabs}
+                navigationBarStyle={styles.primaryNavBar}
+                renderRightButton={<View style={styles.emptyRightButton}/>}
+            />
              <Scene
                 key='userProfile'
                 title='PROFILE'
@@ -167,6 +178,7 @@ export const Routes = Actions.create(
                 titleStyle={styles.navBarTextTabs}
                 tabStyle={styles.tabBarIcon}>
                 <Scene
+                    initial
                     iconName='map'
                     key='tab1'
                     icon={TabIcon}
@@ -207,7 +219,6 @@ export const Routes = Actions.create(
                     navigationBarStyle={styles.primaryNavBar}
                 />
                 <Scene
-                    initial
                     key='tab5'
                     icon={TabIcon}
                     title={strings.zeloo}

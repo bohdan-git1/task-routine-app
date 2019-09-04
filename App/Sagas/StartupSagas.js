@@ -14,8 +14,9 @@ export function* startup(api) {
     yield delay(500)
     const {user} = yield select(state => (state.user))
     if (!isEmpty(user) && user.token && !isEmpty(user.token)) {
-        yield put(CalendarActions.getAllTasks())
         yield put(UserActions.loginSuccess(user))
+        yield delay(500)
+        yield put(CalendarActions.getAllTasks())
     } else {
         Actions.home({type: 'reset'})
     }
@@ -32,7 +33,6 @@ const getAllContacts = () => new Promise(async (resolve, reject) => {
             const granted = await PermissionsAndroid.requestMultiple([
                 PermissionsAndroid.PERMISSIONS.READ_CONTACTS
             ]);
-            console.tron.warn({granted})
             if (
                 granted[PermissionsAndroid.PERMISSIONS.READ_CONTACTS] === PermissionsAndroid.RESULTS.GRANTED
             ) {
@@ -43,7 +43,6 @@ const getAllContacts = () => new Promise(async (resolve, reject) => {
             }
         }
         Contacts.getAll((err, fetchedContactsList) => {
-            console.tron.warn({ err, fetchedContactsList })
             if (err === "denied") {
                 throw new Error('denied getting contacts.')
             } else {
@@ -88,7 +87,6 @@ const getAllContacts = () => new Promise(async (resolve, reject) => {
                     const { recordID, name, phoneNumbers: { 0: {number = ''} = {} } = []} = item
                     return {recordID, name, phone: number}
                 }))
-                console.tron.warn({ dataObject, finalizedContacts })
             }
         })
     } catch (e) {
@@ -101,7 +99,6 @@ function* fetchContacts () {
         yield delay(3000)
     }
     const contacts = yield getAllContacts()
-    console.tron.warn({contacts})
     yield put(ConfigActions.setContactsData(contacts))
 }
 
@@ -119,7 +116,6 @@ function* handleDeniedLocationPermissions(permissionType) {
     const yetNotAsked = permissionType === PERMISSION_RESPONSES.UNDETERMINED
     if (yetNotAsked) {
         const res = yield requestPermissions('location')
-        console.tron.warn('permissionAskingRes: ' + res)
         if (res === PERMISSION_RESPONSES.AUTHORIZED) {
             yield handleAuthorizedLocationPermissions()
 
@@ -138,9 +134,7 @@ function* handleDeniedLocationPermissions(permissionType) {
 }
 
 function* handleAuthorizedLocationPermissions() {
-    console.tron.warn('inside authorized handling location')
     const location = yield getCurrentGPSLocation().then(res => res)
-    console.tron.warn(location)
     if (location && location.latitude && location.longitude) {
         yield put(UserActions.getCurrentLocationSuccess(location))
     } else {

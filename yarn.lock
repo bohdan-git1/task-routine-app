@@ -2149,6 +2149,14 @@ axios@^0.18.1:
     follow-redirects "1.5.10"
     is-buffer "^2.0.2"
 
+axios@^0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.19.0.tgz#8e09bff3d9122e133f7b8101c8fbdd00ed3d2ab8"
+  integrity sha512-1uvKqKQta3KBxIz14F2v06AEHZ/dIoeKfbTRkK1E5oqjDnuEerLmYTgJB5AiQZHJcljpg1TuRzdjDR06qNk0DQ==
+  dependencies:
+    follow-redirects "1.5.10"
+    is-buffer "^2.0.2"
+
 babel-code-frame@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.26.0.tgz#63fd43f7dc1e3bb7ce35947db8fe369a3f58c74b"
@@ -9170,6 +9178,28 @@ react-native-linear-gradient@^2.5.4:
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.6.tgz#96215cbc5ec7a01247a20890888aa75b834d44a0"
   integrity sha512-HDwEaXcQIuXXCV70O+bK1rizFong3wj+5Q/jSyifKFLg0VWF95xh8XQgfzXwtq0NggL9vNjPKXa016KuFu+VFg==
 
+react-native-location-view@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-location-view/-/react-native-location-view-0.2.1.tgz#8dead6f83a95f497591e8c74313e45084c045a32"
+  integrity sha512-8WfOPAaviHa4h2yJLC6TKxnuzMBkTU0fgYA+qA1Ho2TKvS3cFmia/6koG0y2FtRXKsQ0KADxteZNJTpM4jVzlA==
+  dependencies:
+    axios "^0.19.0"
+    prop-types "^15.6.0"
+    react-native-simple-events "^1.0.1"
+
+react-native-location@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-location/-/react-native-location-2.5.0.tgz#b6d2f7e9c3dbe13fbe87587f9533b8bf943b6a35"
+  integrity sha512-myT54tZuFmN6d5RruMVfoa8eY+voJWkSd73xUVhjzJDnQr5uu5MFoH7hMg3trHF1CAkaY/2gIneOspUdGxv59Q==
+
+react-native-maps-directions@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/react-native-maps-directions/-/react-native-maps-directions-1.7.0.tgz#4f476dd42b31b228cf5ae817d5b0b4343516c401"
+  integrity sha512-mnLSJ2bD+esIGGN5xE9QXn3RW3C9hIRMU9ydYvSpVpnux81Q40EeI3wE/7j83CAKdm3zvVpOn8bvMv5wJiEj2Q==
+  dependencies:
+    lodash.isequal "^4.5.0"
+    prop-types "^15.6.0"
+
 react-native-maps@0.25.0:
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.25.0.tgz#81bc51eb50e33811a9e1c345cc48869413ead67d"
@@ -9291,6 +9321,11 @@ react-native-sectionlist-contacts@^1.1.3:
   integrity sha512-CG7UPDQz+QoYZPGhDhJ/VCArU7B3LRo5Ac6qnr7NI3oPzJGQR5fX7ZkbS9OrFeIH2G5lxQ3xGpVUvFIJelgrFQ==
   dependencies:
     lodash "^4.17.11"
+
+react-native-simple-events@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-simple-events/-/react-native-simple-events-1.0.1.tgz#7e636ccd1b7e03029cb78dc9d59d0009f73a3bd6"
+  integrity sha1-fmNszRt+AwKct43J1Z0ACfc6O9Y=
 
 react-native-smooth-pincode-input@^1.0.5:
   version "1.0.7"

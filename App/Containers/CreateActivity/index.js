@@ -11,7 +11,7 @@ import styles from './styles'
 import {Colors} from "../../Themes";
 import Input from "../../Components/Input";
 import CheckBox from "../../Components/CheckBox";
-import {FormatDateTime, getCurrentLocation} from "../../Lib/Utilities";
+import {FormatDateTime, getCurrentLocation, showErrorMessage} from "../../Lib/Utilities";
 import VectorIcon from "../../Components/VectorIcon";
 import GradientView from "../../Components/GradientView";
 import RoundedButton from "../../Components/RoundedButton";
@@ -105,21 +105,23 @@ class CreateActivity extends Component {
     getCurrentLocation = () => {
         this.setState({fetchingCurrentLocation: true})
         getCurrentLocation().then(currentLocation => {
-            this.setState({currentLocation, fetchingCurrentLocation: false})
+            const { location: {longitude, latitude} = {}, address } = currentLocation
+            this.setState({currentLocation, fetchingCurrentLocation: false, locationName: address, locationCoordinates: [latitude, longitude]})
         }).catch((error) => {
+            showErrorMessage(error.message)
             this.setState({fetchingCurrentLocation: false})
         })
     }
 
     onSelectedPlace = (location) => {
-        this.setState({showPlacePicker: false, locationName: location.address})
+        this.setState({showPlacePicker: false, locationName: location.address, locationCoordinates: [location.latitude, location.longitude]})
     }
 
     render() {
         const {fetching} = this.props
-        const {currentLocation: {address: currentLocation = ''}, showPlacePicker, name, locationName, showDatePicker, date, toTime, fromTime, pickerKey, budget, category, priority, showFolderDialog, note, syncCalendar, showInviteDialog, showBudgetDialog, fetchingCurrentLocation} = this.state
+        const {currentLocation: {address: currentLocaitonName = ''}, showPlacePicker, name, locationName, showDatePicker, date, toTime, fromTime, pickerKey, budget, category, priority, showFolderDialog, note, syncCalendar, showInviteDialog, showBudgetDialog, fetchingCurrentLocation} = this.state
         const mode = pickerKey === 'date' ? 'date' : 'time'
-        const location = isEmpty(currentLocation) ? locationName : currentLocation
+        const location = currentLocaitonName || locationName
         return (
             <GradientView gradientStyles={styles.gradientStyles}>
                 <KeyboardAwareScrollView

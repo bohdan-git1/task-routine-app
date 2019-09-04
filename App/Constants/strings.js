@@ -52,4 +52,13 @@ export default {
     takePhoto: 'Take photo',
     chooseFromLibrary: 'Choose form Library',
     noTaskFound: 'No task found on this date',
+    newRouteCreated: 'New route created successfully',
+    markedActive: 'Route is marked as active successfully',
+    markedInActive: 'Route is marked as inactive successfully',
+    noRouteFound: 'No Route Found',
+    startOf: 'Your start off location',
+    markedTaskDone: 'Task marked done successfully.',
+    completed: 'completed',
+    allTasksCompletedForRoute: 'All tasks for this route has been completed',
+    navigationStarted: 'Navigation Starting...'
 }

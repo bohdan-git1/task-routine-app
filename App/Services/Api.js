@@ -46,6 +46,8 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
     const getTaskDetails = (taskId) => api.get(`tasks/${taskId}`)
     const deleteTask = (taskId) => api.delete(`tasks/${taskId}`)
 
+    const updateTaskStatus = (params, taskId) => api.post(`tasks/updateStatus/${taskId}`, params)
+
     // family
     const createFamily = (data) => api.post('families', data)
     const fetchFamily = ({ familyId }) => api.get(`families/${familyId}`)
@@ -55,7 +57,10 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
 
     //Route
     const createRoute = (route) => api.post('routes', route)
-    const getRoutes = (params) => api.get('routes', params)
+    const getRoutes = (data) => api.get('routes', data)
+    const updateRouteStatus = (params, routeId) => api.post(`routes/updateStatus/${routeId}`, params)
+    const deleteRoute = (routeId) => api.delete(`routes/${routeId}`)
+    const getSpecificRoute = (routeId) => api.get(`routes/${routeId}`)
 
     // ------
     // STEP 3
@@ -86,8 +91,13 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
         fetchFamily,
 
         getFolders,
+
         createRoute,
-        getRoutes
+        getRoutes,
+        updateRouteStatus,
+        deleteRoute,
+        getSpecificRoute,
+        updateTaskStatus
     }
 }
 

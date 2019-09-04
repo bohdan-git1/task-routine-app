@@ -3,6 +3,7 @@ package com.zeloo.app.zeloo;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.github.reactnativecommunity.location.RNLocationPackage;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
@@ -39,6 +40,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNLocationPackage(),
             new MapsPackage(),
             new AsyncStoragePackage(),
             new ReactNativeContacts(),

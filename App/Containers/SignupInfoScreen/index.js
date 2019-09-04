@@ -25,7 +25,6 @@ class SingupInfoScreen extends Component {
     constructor(props) {
         super(props)
         const { currentLocation: {latitude = 0, longitude = 0} = {} } = props || {}
-        console.tron.warn('inside constructor: ' + latitude + ': ' + longitude)
         this.state = {
             firstName: '',
             lastName: '',
@@ -40,14 +39,7 @@ class SingupInfoScreen extends Component {
     }
 
     componentWillReceiveProps({currentLocation: newCurrentLocation, error: newError, fetchingLocation}){
-        console.tron.warn('inside will REceivePRps')
         const { fetchingLocation: oldFetching, currentLocation, error } = this.props
-        console.tron.warn({
-            inReceiveProps: true,
-            locConditioN: String(!fetchingLocation && !_.isEmpty(newCurrentLocation) && !_.isEqual(currentLocation, newCurrentLocation)),
-            errCond: String(!fetchingLocation && fetchingLocation !== oldFetching && newError && newError !== error),
-            newLoc: newCurrentLocation
-        })
         if (!fetchingLocation && fetchingLocation !== oldFetching && newError && newError !== error) {
             // todo: case while fetching location got an error
             return
@@ -59,7 +51,6 @@ class SingupInfoScreen extends Component {
     }
 
     componentDidMount () {
-        console.tron.warn('inside Did Mount')
         UserActions.getCurrentLocation()
     }
 
