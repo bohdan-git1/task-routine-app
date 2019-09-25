@@ -60,5 +60,11 @@ export default {
     markedTaskDone: 'Task marked done successfully.',
     completed: 'completed',
     allTasksCompletedForRoute: 'All tasks for this route has been completed',
-    navigationStarted: 'Navigation Starting...'
+    navigationStarted: 'Navigation Starting...',
+    navigationInProgress: `Navigation is in Progress in google maps app`,
+    closeApp: `Please don't close App when Navigation is in progress`,
+    turnByTurnNav: `Turn by Turn Navigation`,
+    enterRouteName: `Please enter route name`,
+    selectTasks: `Select Tasks to create route`,
+    somethingWentWrong: 'Something went wrong',
 }

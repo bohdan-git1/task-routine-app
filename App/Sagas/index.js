@@ -20,7 +20,7 @@ import {APP_URL} from "../Lib/AppConstants";
 import {onGetFolders} from "./FolderSagas";
 import {
     onCreateRoute,
-    onDeleteRoute,
+    onDeleteRoute, onGetActiveRoute,
     onGetRoutes,
     onGetSpecificRoute,
     onUpdateRouteStatus,
@@ -71,6 +71,7 @@ export default function* root() {
         takeLatest(RouteTypes.UPDATE_TASK_STATUS, onUpdateTaskStatus, api),
         takeLatest(RouteTypes.DELETE_ROUTE, onDeleteRoute, api),
         takeLatest(RouteTypes.GET_SPECIFIC_ROUTE, onGetSpecificRoute, api),
+        takeLatest(RouteTypes.GET_ACTIVE_ROUTE, onGetActiveRoute, api),
 
     ])
 }

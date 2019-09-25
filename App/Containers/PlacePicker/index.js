@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import {SafeAreaView} from 'react-native'
 import styles from "./styles";
-import LocationView from "react-native-location-view";
 import {Colors} from "../../Themes";
 import {MAPS_KEY} from "../../Lib/AppConstants";
 import PropTypes from "prop-types";
+import LocationView from "../../Components/LocationView/LocationView";
 
 export default class PlacePicker extends Component {
     static propTypes = {

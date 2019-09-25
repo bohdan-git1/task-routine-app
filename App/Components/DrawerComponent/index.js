@@ -27,6 +27,7 @@ class DrawerComponent extends Component {
                             iconName={'bug-report'} />
                 <DrawerItem title={strings.settings} onPress={Actions.settings} />
                 <DrawerItem title={strings.logout}
+                            onPress={Actions.login}
                             IconClass={MaterialCommunityIcons}
                             iconName={'logout'} />
             </SafeAreaView>

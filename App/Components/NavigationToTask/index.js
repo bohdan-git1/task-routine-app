@@ -1,69 +1,98 @@
 import React, {Component} from 'react'
-import {Alert, Dimensions, StyleSheet, Text, View} from 'react-native'
-import MapView from "react-native-maps";
+import {Alert, Dimensions, StyleSheet, Text, BackAndroid, BackHandler, View, SafeAreaView} from 'react-native'
 import Colors from "../../Themes/Colors";
 import strings from "../../Constants/strings";
 import CurrentLocationMarker from "../CurrentLocationMarker";
-import MapViewDirections from "react-native-maps-directions";
 import {Actions} from 'react-native-router-flux'
 import RouteActions from '../../Redux/RouteRedux'
-
-import {MAPS_KEY} from "../../Lib/AppConstants";
 import {connect} from "react-redux";
-import Metrics from "../../Themes/Metrics";
 import {ProgressDialog} from "../ProgressDialog";
 import {showMessage, TASK_STATUSES} from "../../Lib/Utilities";
+import {Fonts, Metrics} from "../../Themes";
+import openMap from 'react-native-open-maps';
+import NavigationButton from "../NavigationButton";
 
 const DefaultNavigationDelta = {
     latitudeDelta: 0.0422,
     longitudeDelta: 0.0421,
 }
 
-const {width, height} = Dimensions.get('window');
-
 class NavigationToTask extends Component {
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {
+            taskInProgress: true,
+        }
     }
 
     componentDidMount(){
-        showMessage(strings.navigationStarted)
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+        const {currentLocation, nextTask, nextRouteId} = this.props
+        const {task: {locationCoordinates = [0, 0]} = {}} = nextTask
+        const destination = {latitude: locationCoordinates[0], longitude: locationCoordinates[1]}
+        const mapUrl = {latitude: currentLocation.latitude, longitude: currentLocation.longitude, start: `${currentLocation.latitude},${currentLocation.longitude}`, end: `${destination.latitude},${destination.longitude}`}
+        setTimeout(() => {
+            showMessage(strings.navigationStarted)
+            openMap(mapUrl)
+        }, 1000)
+    }
+
+    componentWillUnmount() {
+        this.backHandler.remove()
+    }
+
+
+    onPressedBack = () => {
+       return Alert.alert(
+            'Navigation is in progress',
+            'Do you want to cancel the current navigation to task',
+            [
+                {
+                    text: 'Yes',
+                    onPress: () => Actions.tabbar({type: 'reset'}),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Mark Task Done',
+                    onPress: () => this.props.updateTaskStatusReq(nextTask.task.id, nextRouteId, TASK_STATUSES.COMPLETED)
+                },
+                {
+                    text: 'Do Nothing',
+                    onPress: () => {},
+                    style: 'cancel',
+                },
+            ],
+            {cancelable: false},
+        );
+    }
+
+    handleBackPress = () => {
+        this.onPressedBack()
+        return true;
     }
 
     render() {
+        const {taskInProgress} = this.state
         const {currentLocation, nextTask, nextRouteId} = this.props
         const {task: {locationName: destinationName, name, id: taskID, locationCoordinates = [0, 0]} = {}} = nextTask
         const destination = {latitude: locationCoordinates[0], longitude: locationCoordinates[1]}
         return (
-            <View style={styles.mainContainer}>
-                <View style={styles.topContainer}>
-                    <View style={[styles.row, styles.borderBottom]}>
-                        <Text>From: {currentLocation.latitude}, {currentLocation.longitude}</Text>
-                    </View>
-                    <View style={styles.row}>
-                        <Text>To: {destinationName}</Text>
-                    </View>
+            <SafeAreaView style={styles.mainContainer}>
+                <View style={styles.navBar}>
+                    <NavigationButton onPress={this.onPressedBack} iconName={'chevron-thin-left'} iconType={'Entypo'}  size={20} style={styles.backIcon} />
+                    <Text style={styles.title}>{strings.turnByTurnNav}</Text>
+                    <View style={styles.dummyView}/>
                 </View>
-                <MapView
-                    region={{...currentLocation, ...DefaultNavigationDelta}}
-                    initialRegion={{...currentLocation, ...DefaultNavigationDelta}}
-                    style={styles.mapContainer}
-                    ref={c => this.mapView = c}
-                >
-                    <MapView.Marker key={`${taskID}`}
-                                    coordinate={destination}
-                                    title={destinationName}
-                                    pinColor={Colors.red}/>
-                    <MapView.Marker key={'userCurrentLocationMarker'}
-                                    coordinate={currentLocation}
-                                    title={strings.startOf}/>
+                <View style={styles.innerContainer}>
+                {taskInProgress && <Text style={styles.navInProgress}>{strings.navigationInProgress}</Text>}
+                {taskInProgress && <Text style={styles.closeApp}>{strings.closeApp}</Text>}
                     <CurrentLocationMarker defaultLocation={currentLocation}
                                            isTracking={true}
                                            onArrived={() => {
+                                               this.setState({taskInProgress: false})
                                                Alert.alert(
                                                    'Arrived',
-                                                   'your destination has arrived. ',
+                                                   'Your destination has arrived. Mark Task as completed or Cancel.',
                                                    [
                                                        {
                                                            text: 'Cancel',
@@ -79,35 +108,9 @@ class NavigationToTask extends Component {
                                                );
                                            }}
                                            destination={destination}/>
-                    <MapViewDirections
-                        origin={currentLocation}
-                        destination={destination}
-                        apikey={MAPS_KEY}
-                        strokeWidth={5}
-                        strokeColor={Colors.red}
-                        optimizeWaypoints={true}
-                        onStart={(params) => {
-                            console.tron.warn(`Started routing between "${params.origin}" and "${params.destination}"`);
-                        }}
-                        onReady={result => {
-                            this.setState({startedNavigation: true}, () => {
-                                this.mapView.fitToCoordinates(result.coordinates, {
-                                    edgePadding: {
-                                        right: (width / 20),
-                                        bottom: (height / 20),
-                                        left: (width / 20),
-                                        top: (height / 20),
-                                    }
-                                });
-                            })
-                        }}
-                        onError={(errorMessage) => {
-                            console.tron.warn(errorMessage)
-                        }}
-                    />
-                </MapView>
                 <ProgressDialog hide={!this.props.fetching}/>
-            </View>
+                </View>
+            </SafeAreaView>
         )
     }
 }
@@ -129,34 +132,46 @@ export default connect(mapStateToProps, mapDispatchToProps)(NavigationToTask)
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
+        backgroundColor: Colors.snow,
     },
-    topContainer: {
-        width: '100%',
-        padding: Metrics.doubleBaseMargin,
-        backgroundColor: Colors.snow
+    innerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        paddingHorizontal: Metrics.marginThirty,
     },
-    row: {
+    navInProgress: {
+        color: Colors.black,
+        textAlign: 'center',
+        fontSize: Fonts.size.h5
+    },
+    closeApp: {
+        color: Colors.gray,
+        textAlign: 'center',
+        fontSize: Fonts.size.regular,
+        marginTop: Metrics.marginFifteen
+    },
+    navBar: {
+        height: 55,
         flexDirection: 'row',
-        paddingVertical: Metrics.smallMargin,
+        alignItems: 'center',
+        width: Metrics.screenWidth,
+        backgroundColor: Colors.primaryColorI,
     },
-    borderBottom: {
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: Colors.grayI
+    backIcon: {
+        padding: 10,
+        fontSize: 20,
+        color: Colors.snow
     },
-    mapContainer: {
-        flex: 1
+    title: {
+        flex: 1,
+        justifyContent: 'center',
+        alignSelf: 'center',
+        textAlign: 'center',
+        fontWeight: null,
+        fontFamily: Fonts.type.medium,
+        color: Colors.snow
     },
-    navigationContainer: {
-        width: 40,
-        right: 25,
-        height: 40,
-        borderRadius: 20,
-        bottom: Metrics.screenHeight / 2
-    },
-    locationContainer: {
-        bottom: Metrics.screenHeight / 2 - 60
-    },
-    routeContainer: {
-        flex: 1
+    dummyView: {
+        width: 40
     }
 })

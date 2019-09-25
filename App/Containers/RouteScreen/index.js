@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Dimensions, FlatList, SafeAreaView, StatusBar} from 'react-native'
+import {Alert, Dimensions, FlatList, View, SafeAreaView, StatusBar, AppState} from 'react-native'
 import MapView from "react-native-maps";
 import MapViewDirections from 'react-native-maps-directions';
 import * as _ from 'lodash'
@@ -20,7 +20,16 @@ import {ProgressDialog} from "../../Components/ProgressDialog";
 import {MAPS_KEY} from "../../Lib/AppConstants";
 import AnimatedAlert from "../../Components/AnimatedAlert";
 import RNLocation from "react-native-location";
-import {routeHasIncompleteTask, routeHasTasks, showMessage, TASK_STATUSES} from "../../Lib/Utilities";
+import {
+    ARRIVED_DISTANCE_THRESHOLD,
+    getLatLonDiffInMeters,
+    routeHasIncompleteTask,
+    routeHasTasks,
+    showMessage,
+    TASK_STATUSES
+} from "../../Lib/Utilities";
+import openMap from "react-native-open-maps";
+import firebase from "react-native-firebase";
 
 const {width, height} = Dimensions.get('window');
 
@@ -32,22 +41,129 @@ export const DefaultDelta = {
 class RouteScreen extends Component {
     constructor(props) {
         super(props)
-        const {currentLocation, routes, route} = props
+        const {route} = props
         StatusBar.setBackgroundColor(Colors.primaryColorI)
         this.state = {
             location: {},
             selectedRouteId: route.id || null,
-            activeRoute: route || {}
+            activeRoute: route || {},
+            appState: AppState.currentState,
+            arrived: false,
+            nextTask: {},
+            nextRouteId: '',
+            navigationInProgress: false
         }
         this.mapView = null;
         this.activeRoute = false
     }
 
+    buildNotification = () => {
+        const notification = new firebase.notifications.Notification()
+            .setNotificationId('1')
+            .setTitle('Arrived')
+            .setBody('Your destination has arrived.')
+            .android.setPriority(firebase.notifications.Android.Priority.High)
+            .android.setChannelId('reminder')
+            .android.setAutoCancel(true)
+
+        return notification;
+    };
+
+    setNotification = async () => {
+        firebase.notifications().displayNotification(this.buildNotification())
+    };
+
+    showNavigationDialog = () => {
+        const {nextTask, nextRouteId} = this.state
+        return Alert.alert(
+            'Navigation in progress',
+            'Do you want to cancel navigation?',
+            [
+                {
+                    text: 'Mark Task Done',
+                    onPress: () => this.props.updateTaskStatusReq(nextTask.task.id, nextRouteId, TASK_STATUSES.COMPLETED)
+                },
+                {
+                    text: 'Cancel',
+                    onPress: () => Actions.tabbar({type: 'reset'}),
+                    style: 'cancel',
+                },
+            ],
+            {cancelable: false},
+        );
+    }
+
+    _handleAppStateChange = (nextAppState) => {
+        if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+            const {nextTask, nextRouteId} = this.state
+            if (this.state.arrived) {
+                Alert.alert(
+                    'Arrived',
+                    'Your destination has arrived. Mark Task as completed or Cancel.',
+                    [
+                        {
+                            text: 'Cancel',
+                            onPress: () => Actions.tabbar({type: 'reset'}),
+                            style: 'cancel',
+                        },
+                        {
+                            text: 'Mark Done',
+                            onPress: () => this.props.updateTaskStatusReq(nextTask.task.id, nextRouteId, TASK_STATUSES.COMPLETED)
+                        },
+                    ],
+                    {cancelable: false},
+                );
+            }
+        }
+        this.setState({appState: nextAppState});
+    };
+
+    _startUpdatingLocation = (destination) => {
+        this.locationSubscription = RNLocation.subscribeToLocationUpdates(
+            (locations) => {
+                // console.tron.warn({locations})
+                const {0: {longitude = 0, latitude = 0} = {}} = locations
+                this.currentLocation = {latitude, longitude}
+                this.setState({currentLocation: {latitude, longitude}}, () => {
+                    if (this.trackingMarker && this.trackingMarker.redraw) {
+                        this.trackingMarker.redraw()
+                    }
+                    const distance = getLatLonDiffInMeters(latitude, longitude, destination.latitude, destination.longitude);
+                    if (Math.abs(distance)) {
+                        if (distance <= ARRIVED_DISTANCE_THRESHOLD) {
+                            this.setState({arrived: true})
+                            this.setNotification()
+                            this._stopUpdatingLocation()
+                        }
+                    }
+                });
+            }
+        );
+    };
+
+
+    _stopUpdatingLocation = () => {
+        this.locationSubscription && this.locationSubscription();
+        // this.setState({ userCurrentLocation: null });
+    };
+
+    componentWillUnmount() {
+        AppState.removeEventListener('change', this._handleAppStateChange);
+        this._stopUpdatingLocation()
+    }
+
+
     async componentDidMount() {
         const {getAllRoutes} = this.props
         getAllRoutes({status: null, sort: 'today'})
+        AppState.addEventListener('change', this._handleAppStateChange);
         RNLocation.configure({
-            distanceFilter: 1,
+            desiredAccuracy: {
+                ios: "bestForNavigation",
+                android: "highAccuracy"
+            },
+            allowsBackgroundLocationUpdates: true,
+            distanceFilter: 0.01,
             androidProvider: "auto",
             interval: 1000, // Milliseconds
             fastestInterval: 1000, // Milliseconds
@@ -58,14 +174,15 @@ class RouteScreen extends Component {
                 detail: "fine",
                 rationale: {
                     title: "Location permission",
-                    message: "We use your location to show you real time direactions.",
+                    message: "We use your location to show you real time directions.",
                     buttonPositive: "OK",
                     buttonNegative: "Cancel"
                 }
             }
         })).then(granted => {
+            console.tron.warn(granted)
             if (granted) {
-                this._startUpdatingLocation();
+                console.tron.warn('Start updating location')
             } else {
             }
         });
@@ -89,7 +206,8 @@ class RouteScreen extends Component {
     }
 
     renderRouteItem = ({item}) => {
-        return <CalendarItem onPress={() => this.onPressedRouteItem(item.id)} item={item} onMarkTaskDone={this.onMarkTaskDone} />
+        return <CalendarItem onPress={() => this.onPressedRouteItem(item.id)} item={item}
+                             onMarkTaskDone={this.onMarkTaskDone}/>
     }
 
     onMarkTaskDone = (taskId, status) => {
@@ -99,12 +217,12 @@ class RouteScreen extends Component {
     }
 
     renderListHeaderComponent = (activeRoute) => {
-        return <SelectedRoute item={activeRoute} onCloseTask={this.removeActiveTask} />
+        return <SelectedRoute item={activeRoute} onCloseTask={this.removeActiveTask}/>
     }
 
     removeActiveTask = () => {
-        const { updateRouteStatus, getSpecificRoute, route } = this.props
-        const { selectedRouteId } = this.state
+        const {updateRouteStatus, getSpecificRoute, route} = this.props
+        const {selectedRouteId} = this.state
         const routeId = selectedRouteId || route.id
 
         if (_.isEmpty(route) || !routeId) {
@@ -125,11 +243,27 @@ class RouteScreen extends Component {
             if (hasTasks) {
                 showMessage(strings.allTasksCompletedForRoute)
             } else {
-               showMessage(strings.noTaskFound)
+                showMessage(strings.noTaskFound)
             }
         } else {
-            Actions.push('navigateToTask', {nextTask, nextRouteId: route.id})
+            this.navigateToTask(nextTask, route.id)
         }
+    }
+
+    navigateToTask = (nextTask, nextRouteId) => {
+        const {currentLocation, activeRoute} = this.props
+        this.setState({nextRouteId, nextTask, navigationInProgress: true})
+        const {task: {locationName: destinationName, name, id: taskID, locationCoordinates = [0, 0]} = {}} = nextTask
+        const destination = {latitude: locationCoordinates[0], longitude: locationCoordinates[1]}
+        this._startUpdatingLocation(destination);
+        const mapUrl = {
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+            start: `${currentLocation.latitude},${currentLocation.longitude}`,
+            end: `${destination.latitude},${destination.longitude}`
+        }
+        showMessage(strings.navigationStarted)
+        openMap(mapUrl)
     }
 
     onMarkerPress = (item) => {
@@ -148,7 +282,10 @@ class RouteScreen extends Component {
         const {fetching, fetchingTasks, routes = [], route = {}, currentLocation} = this.props
         let activeRoute = this.getActiveRoute()
         let tasksList = []
-        const {selectedRouteId, isTracking} = this.state
+        const {selectedRouteId, navigationInProgress} = this.state
+        if (navigationInProgress) {
+            this.showNavigationDialog()
+        }
         const originLocation = {...currentLocation, ...DefaultDelta}
         let locationCoordinates = []
         let wayPoints = null
@@ -251,8 +388,8 @@ class RouteScreen extends Component {
     }
 }
 
-const mapStateToProps = ({route: {fetching, fetchingTasks, routes = [], route = {}}, user: {currentLocation}}) => {
-    return {fetching, routes, route, currentLocation, fetchingTasks}
+const mapStateToProps = ({route: {fetching, activeRoute, fetchingTasks, routes = [], route = {}}, user: {currentLocation}}) => {
+    return {fetching, routes, route, currentLocation, activeRoute, fetchingTasks}
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -260,6 +397,7 @@ const mapDispatchToProps = (dispatch) => {
         getAllRoutes: (params) => dispatch(RouteActions.getRoutes(params)),
         deleteRoute: (routeId) => dispatch(RouteActions.deleteRoute(routeId)),
         getSpecificRoute: (routeId) => dispatch(RouteActions.getSpecificRoute(routeId)),
+        getActiveRoute: (params) => dispatch(RouteActions.getActiveRoute(params)),
         updateRouteStatus: (routeId, params, fetchAfterUpdate) => dispatch(RouteActions.updateRouteStatus(routeId, params, fetchAfterUpdate)),
         getCurrentLocation: () => dispatch(UserActions.getCurrentLocation()),
         updateTaskStatusReq: (taskId, routeId, status, fetchAfterUpdate) => dispatch(RouteActions.updateTaskStatus(taskId, routeId, status, fetchAfterUpdate))

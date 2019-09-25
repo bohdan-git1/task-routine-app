@@ -16,8 +16,16 @@ const {Types, Creators} = createActions({
     getSpecificRouteSuccess: ['route'],
     getSpecificRouteFailure: ['error'],
 
+    getActiveRoute: ['params'],
+    getActiveRouteSuccess: ['activeRoute'],
+    getActiveRouteFailure: ['error'],
+
+    getActiveRouteTasks: ['params'],
+    getActiveRouteTasksSuccess: ['activeRouteTasks'],
+    getActiveRouteTasksFailure: ['error'],
+
     updateRouteStatus: ['routeId', 'params', 'fetchAfterUpdate'],
-    updateRouteStatusSuccess: ['route'],
+    updateRouteStatusSuccess: ['route', 'status'],
     updateRouteStatusFailure: ['error'],
 
     deleteRoute: ['routeId'],
@@ -39,7 +47,8 @@ export const INITIAL_STATE = Immutable({
     fetching: false,
     fetchingTasks: false,
     routes: [],
-    route: {}
+    route: {},
+    activeRoute: {}
 })
 
 /* ------------- Reducers ------------- */
@@ -54,9 +63,16 @@ export const getRoutes = (state) => state.merge({fetching: true})
 export const getRoutesSuccess = (state, {routes}) => state.merge({fetching: false, error: null, routes})
 export const getRoutesFailure = (state) => state.merge({fetching: false, error: true})
 
+// Get  Active Routes
+export const getActiveRoute = (state) => state.merge({fetching: true})
+export const getActiveRouteSuccess = (state, {activeRoute}: Object) => state.merge({fetching: false, error: null, activeRoute})
+export const getActiveRouteFailure = (state) => state.merge({fetching: false, error: true})
+
 //Update Route Status
 export const updateRouteStatus = (state) => state.merge({fetching: true})
-export const updateRouteStatusSuccess = (state, {route}) => state.merge({fetching: false, error: null, route})
+export const updateRouteStatusSuccess = (state, {route, status}) =>{
+   return state.merge({fetching: false, error: null, route,  activeRoute:  status === 'inactive' ? {} : state.activeRoute})
+}
 export const updateRouteStatusFailure = (state) => state.merge({fetching: false, error: true})
 
 //Update Route Status
@@ -93,6 +109,10 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.GET_ROUTES]: getRoutes,
     [Types.GET_ROUTES_SUCCESS]: getRoutesSuccess,
     [Types.GET_ROUTES_FAILURE]: getRoutesFailure,
+
+    [Types.GET_ACTIVE_ROUTE]: getActiveRoute,
+    [Types.GET_ACTIVE_ROUTE_SUCCESS]: getActiveRouteSuccess,
+    [Types.GET_ACTIVE_ROUTE_FAILURE]: getActiveRouteFailure,
 
     [Types.UPDATE_ROUTE_STATUS]: updateRouteStatus,
     [Types.UPDATE_ROUTE_STATUS_SUCCESS]: updateRouteStatusSuccess,

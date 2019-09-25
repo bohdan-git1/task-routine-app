@@ -28,11 +28,14 @@ import Colors from "../../../Themes/Colors";
 import AddContacts from "../../../Components/AddContacts";
 import ModalComponent from "../../../Components/ModalComponent";
 import strings from "../../../Constants/strings";
-import {showErrorMessage} from "../../../Lib/Utilities";
+import {showErrorMessage, TASK_STATUSES} from "../../../Lib/Utilities";
 import CreateNewContact from "../../../Components/CreateNewContact";
 import FoldersComponent from "../../../Components/FoldersComponent";
 import {Actions} from "react-native-router-flux";
 import ActionButtons from "../../../Components/ActionButtons";
+import RouteActions from "../../../Redux/RouteRedux";
+import {isEmpty} from "ramda";
+import moment from "moment";
 
 class HomeTab extends Component {
 
@@ -50,6 +53,7 @@ class HomeTab extends Component {
     }
 
     async componentDidMount() {
+        this.props.getActiveRoute({status: 'active', sort: 'today'})
         if (Platform.OS === "android") {
             await this.requestContactPermissionAndroid();
             this.processData();
@@ -192,20 +196,21 @@ class HomeTab extends Component {
     }
 
     renderCurrentTask = () => {
-        const {currentTask = {}} = this.props
-        if (_.isEmpty(currentTask)) {
-            return <Text style={styles.noTaskText}>{strings.noTaskPlanned}</Text>
-        }
-        // todo: render the task if exists.
+        const {route: {tasks = []} = {}} = this.props
+        const activeTask = tasks[0] || {}
+        let {task: {name: taskName, fromTime= '', toTime = ''} = {}} = activeTask
+             if(!isEmpty(taskName)){
+                 taskName = `${taskName} at ${moment(fromTime).format('MM/DD/YYYY')}\n${moment(fromTime).format('HH:mm')} to ${moment(toTime).format('HH:mm')}`
+             } else {
+                 taskName = strings.noTaskPlanned
+             }
+            return <Text style={styles.noTaskText}>{taskName}</Text>
     }
 
     renderActiveRoute = () => {
-        const {
-            activeRoute: {
-                taskName = strings.noTaskAvailable,
-                location = strings.noLocationAvailable
-            } = {}
-        } = this.props
+        const {route: {tasks = []} = {}} = this.props
+        const activeTask = tasks[1] || {}
+        const {task: {locationName = strings.noLocationAvailable, name = strings.noTaskAvailable} = {}} = activeTask
         return (
             <>
                 <View style={styles.routeLeftIconContainer}>
@@ -213,9 +218,9 @@ class HomeTab extends Component {
                            style={styles.routeLeftIcon}/>
                 </View>
                 <View style={styles.activeRouteDetailsContainer}>
-                    <Text style={styles.activeRouteTaskName}>{taskName}</Text>
+                    <Text style={styles.activeRouteTaskName}>{name}</Text>
                     <View style={styles.routerHorizontalSeperator}/>
-                    <Text style={styles.activeRouteLocationName}>{location}</Text>
+                    <Text numberOfLines={2} style={styles.activeRouteLocationName}>{locationName}</Text>
                 </View>
             </>
         )
@@ -258,7 +263,10 @@ class HomeTab extends Component {
     }
 
     onMarkTaskDone = () => {
-        // todo: mark Task as Done
+        const {updateTaskStatusReq, route: {tasks = []} = {}} = this.props
+        const activeTask = tasks[0] || {}
+        const {task: {id: taskId = ''} = {}, routeId = ''} = activeTask
+        updateTaskStatusReq(taskId, routeId, TASK_STATUSES.COMPLETED)
     }
 
     onIgnoreTask = () => {
@@ -270,7 +278,10 @@ class HomeTab extends Component {
     }
 
     onStopActiveRoute = () => {
-        // todo: stop current active route
+        const {updateRouteStatus, activeRoute: {id: routeId} = {}} = this.props
+        if(routeId) {
+            updateRouteStatus(routeId, {status: 'inactive'}, true)
+        }
     }
 
     renderTaskActions = () => {
@@ -296,6 +307,7 @@ class HomeTab extends Component {
     }
 
     renderActiveRouteActions = () => {
+        const {activeRoute: {noOfTask = 0, noOfTaskCompleted = 0} = {}} = this.props
         return (
             <View style={styles.bottomActionsRow}>
                 <TouchableOpacity style={styles.taskLeftActionBtn}
@@ -305,7 +317,7 @@ class HomeTab extends Component {
                 </TouchableOpacity>
                 <View style={styles.taskMiddleBtn}>
                     <View style={styles.verticalActionSeperator}/>
-                    <Text style={styles.tasksStatusText}>2 out of 6 Done</Text>
+                    <Text style={styles.tasksStatusText}>{`${noOfTaskCompleted} out of ${noOfTask} Done`}</Text>
                     <View style={styles.verticalActionSeperator}/>
                 </View>
                 <TouchableOpacity style={styles.taskRightActionBtn}
@@ -338,7 +350,7 @@ class HomeTab extends Component {
 
     render() {
         const {familyName, selectedContacts, showContactsList, contact, showAddFamilyMember} = this.state
-        const {isSignup, family = {}, fetching, contacts, folders} = this.props
+        const {isSignup, family = {}, fetching, contacts, folders, routesFetching} = this.props
         const {name, users = []} = family
         if (fetching) {
             return (
@@ -410,6 +422,7 @@ class HomeTab extends Component {
                                       onPressFolder={() => this.folderActions.show()}
                                       onAddFolder={this.onAddFolder}/>
                 </ScrollView>
+                <ProgressDialog hide={!routesFetching}/>
                 <ModalComponent isModalVisible={showContactsList}
                                 closeModal={this.onHideContactList}>
                     <SafeAreaView style={{flex: 1, backgroundColor: Colors.snow}}>
@@ -439,17 +452,22 @@ const mapStateToProps = ({
                              config: {contacts = []} = {},
                              user: {user, isSignup} = {},
                              family: {fetching, family} = {},
+                             route: {activeRoute = {}, route = {}, fetching: routesFetching} = {},
                              folder: {folders = [], hasNoMore: noMoreFolders = false} = {}
                          }) => {
     return {
-        user, isSignup, fetching, family, contacts, folders, noMoreFolders
+        user, route, isSignup, fetching, routesFetching, activeRoute, family, contacts, folders, noMoreFolders
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        deleteRoute: (routeId) => dispatch(RouteActions.deleteRoute(routeId)),
+        getActiveRoute: (params) => dispatch(RouteActions.getActiveRoute(params)),
         fetchFamilyReq: (familyId) => dispatch(FamilyActions.fetchFamily(familyId)),
-        createFamilyReq: (familyName, invites) => dispatch(FamilyActions.createFamily(familyName, invites))
+        createFamilyReq: (familyName, invites) => dispatch(FamilyActions.createFamily(familyName, invites)),
+        updateTaskStatusReq: (taskId, routeId, status) => dispatch(RouteActions.updateTaskStatus(taskId, routeId, status)),
+        updateRouteStatus: (routeId, params, fetchAfterUpdate) => dispatch(RouteActions.updateRouteStatus(routeId, params, fetchAfterUpdate))
     }
 }
 

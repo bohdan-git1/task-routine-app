@@ -13,6 +13,8 @@ import {connect} from "react-redux";
 import AnimatedAlert from "../../Components/AnimatedAlert";
 import {ProgressDialog} from "../../Components/ProgressDialog";
 import {Actions} from "react-native-router-flux";
+import {isEmpty} from "ramda";
+import {showMessage} from "../../Lib/Utilities";
 
 class CreateRoute extends Component {
     constructor(props) {
@@ -58,11 +60,17 @@ class CreateRoute extends Component {
     createNewRoute = () => {
         const {date, name, selectedTasks} = this.state
         const stepCoordinates = [
-            29.653812,
-            70.591211
+            0,
+            0
         ]
-        const route = {date, name, selectedTasks, stepCoordinates}
-        Actions.selectTaskOrder({route})
+        if(isEmpty(name)){
+            showMessage(strings.enterRouteName)
+        } else if(selectedTasks.length === 0){
+            showMessage(strings.selectTasks)
+        } else {
+            const route = {date, name, selectedTasks, stepCoordinates}
+            Actions.selectTaskOrder({route})
+        }
     }
 
 

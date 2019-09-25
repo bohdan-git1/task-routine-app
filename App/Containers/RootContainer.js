@@ -1,13 +1,13 @@
 import React, {Component} from 'react'
 import {StatusBar, Platform} from 'react-native'
 import {connect} from 'react-redux'
-import ReduxRouter, {ReduxNavigator} from '../Navigation/NavigationRouter'
 import { Actions } from 'react-native-router-flux'
 import { checkConnected } from '../Lib/Utilities'
 import StartupActions from '../Redux/StartupRedux'
 import ReduxPersist from '../Config/ReduxPersist'
 // Styles
 import { Colors } from '../Themes'
+import NavigationRouter from "../Navigation/NavigationRouter";
 
 class RootContainer extends Component {
   componentDidMount () {
@@ -28,9 +28,7 @@ class RootContainer extends Component {
 
   render () {
     return (
-      <ReduxRouter
-        navigator={ReduxNavigator}
-        backAndroidHandler={this.backHandler} />
+      <NavigationRouter/>
     )
   }
 }
