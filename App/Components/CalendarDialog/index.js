@@ -5,16 +5,18 @@ import {ScrollView, Text, TouchableOpacity, View} from 'react-native'
 import styles from './styles'
 import VectorIcon from "../VectorIcon";
 import strings from "../../Constants/strings";
-import {CalendarTypes} from "../../Lib/AppConstants";
+import CalendarActions from "../../Redux/CalendarRedux";
+import {connect} from "react-redux";
 
-export default class CalendarDialog extends Component {
+class CalendarDialog extends Component {
     static propTypes = {
         onDone: PropTypes.function,
+        calendars: PropTypes.array
     }
 
     static defaultProps = {
-        onDone: () => {
-        }
+        onDone: () => {},
+        calendars: []
     }
 
 
@@ -36,30 +38,33 @@ export default class CalendarDialog extends Component {
     }
 
     onSelectCalendar = (calendar) => {
+        const {id: calendarId = ''} = calendar
         let {selectedCalendar = []} = this.state
-        if (selectedCalendar.includes(calendar)) {
-            const index = selectedCalendar.findIndex((item) => item === calendar)
+        if (selectedCalendar.includes(calendarId)) {
+            const index = selectedCalendar.findIndex((item) => item === calendarId)
             selectedCalendar.splice(index, 1)
         } else {
-            selectedCalendar.push(calendar)
+            selectedCalendar.push(calendarId)
         }
         this.setState({selectedCalendar})
     }
 
 
     render() {
+        const {calendars} = this.props
         const {selectedCalendar = []} = this.state
         return (
             <TouchableOpacity activeOpacity={1} style={styles.mainContainer}>
                 <TouchableOpacity activeOpacity={1} style={styles.innerContainer}>
                     {this.renderHeader()}
                     <ScrollView style={styles.contentContainer}>
-                        {CalendarTypes.map((calendar) => {
+                        {calendars.map((calendar) => {
+                            const {id = '', title = ''} = calendar
                             return (
                                 <TouchableOpacity onPress={() => this.onSelectCalendar(calendar)}
                                                   style={styles.itemContainer}>
-                                    <Text style={styles.calendarType}>{calendar}</Text>
-                                    {selectedCalendar.includes(calendar) &&
+                                    <Text style={styles.calendarType}>{title}</Text>
+                                    {selectedCalendar.includes(id) &&
                                     <VectorIcon name={'checkcircle'} type={'AntDesign'} style={styles.checkCircle}/>}
                                 </TouchableOpacity>
                             )
@@ -70,3 +75,16 @@ export default class CalendarDialog extends Component {
         )
     }
 }
+
+const mapStateToProps = ({calendar: {fetching, tasks = []}}) => {
+    return {fetching, tasks}
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        syncCalendar: (calendarId) => dispatch(CalendarActions.syncCalendar(calendarId))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CalendarDialog)
+

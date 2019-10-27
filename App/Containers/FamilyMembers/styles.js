@@ -4,10 +4,13 @@ import { ApplicationStyles, Colors, Metrics } from "../../Themes";
 export default StyleSheet.create({
   ...ApplicationStyles.screen,
   mainContainer: {
-    paddingHorizontal: Metrics.marginFifteen
+    flex: 1,
+    backgroundColor: Colors.snow,
+    padding: Metrics.marginFifteen,
   },
   buttonContainer: {
     marginTop: Metrics.baseMargin,
+    borderRadius: Metrics.smallMargin,
     backgroundColor: Colors.themeColor
   },
   buttonText: {

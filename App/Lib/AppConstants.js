@@ -12,7 +12,7 @@ export const photosPermissionTypes = {
   PHOTOS: 'photo'
 }
 export const MAPS_KEY = 'AIzaSyBEhXXp2d0qDvVOJnDHTmQCD2hNeG2fDDg'
-export const APP_URL = 'http://18.191.149.64:3030/api/' //http://18.191.149.64:3030/api/'
+export const APP_URL = 'http://18.191.149.64:3030/' //http://18.191.149.64:3030/api/'
 
 export const CloudinaryCred  = {
   "apiKey": "713915523318189",
@@ -94,19 +94,6 @@ export const ActivityActions = [
     title: 'CREATE ROUTE',
     color: Colors.green
   }
-]
-
-export const CalendarTypes = [
-  'My Calendar',
-    'Kayleegpowell@gmail.com',
-    'Our Calendar',
-    '432hz',
-    'jkevinpowell@gmail.com',
-    'Rachel & Kevin',
-    'Family',
-    '#Meg+Grant',
-    'Contacts'
-
 ]
 
 

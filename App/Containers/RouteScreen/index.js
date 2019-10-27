@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Alert, Dimensions, FlatList, View, SafeAreaView, StatusBar, AppState} from 'react-native'
+import {Dimensions, FlatList, Modal, SafeAreaView, StatusBar, Text, View} from 'react-native'
 import MapView from "react-native-maps";
 import MapViewDirections from 'react-native-maps-directions';
 import * as _ from 'lodash'
@@ -30,6 +30,7 @@ import {
 } from "../../Lib/Utilities";
 import openMap from "react-native-open-maps";
 import firebase from "react-native-firebase";
+import RoundedButton from "../../Components/RoundedButton";
 
 const {width, height} = Dimensions.get('window');
 
@@ -47,7 +48,6 @@ class RouteScreen extends Component {
             location: {},
             selectedRouteId: route.id || null,
             activeRoute: route || {},
-            appState: AppState.currentState,
             arrived: false,
             nextTask: {},
             nextRouteId: '',
@@ -73,50 +73,6 @@ class RouteScreen extends Component {
         firebase.notifications().displayNotification(this.buildNotification())
     };
 
-    showNavigationDialog = () => {
-        const {nextTask, nextRouteId} = this.state
-        return Alert.alert(
-            'Navigation in progress',
-            'Do you want to cancel navigation?',
-            [
-                {
-                    text: 'Mark Task Done',
-                    onPress: () => this.props.updateTaskStatusReq(nextTask.task.id, nextRouteId, TASK_STATUSES.COMPLETED)
-                },
-                {
-                    text: 'Cancel',
-                    onPress: () => Actions.tabbar({type: 'reset'}),
-                    style: 'cancel',
-                },
-            ],
-            {cancelable: false},
-        );
-    }
-
-    _handleAppStateChange = (nextAppState) => {
-        if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-            const {nextTask, nextRouteId} = this.state
-            if (this.state.arrived) {
-                Alert.alert(
-                    'Arrived',
-                    'Your destination has arrived. Mark Task as completed or Cancel.',
-                    [
-                        {
-                            text: 'Cancel',
-                            onPress: () => Actions.tabbar({type: 'reset'}),
-                            style: 'cancel',
-                        },
-                        {
-                            text: 'Mark Done',
-                            onPress: () => this.props.updateTaskStatusReq(nextTask.task.id, nextRouteId, TASK_STATUSES.COMPLETED)
-                        },
-                    ],
-                    {cancelable: false},
-                );
-            }
-        }
-        this.setState({appState: nextAppState});
-    };
 
     _startUpdatingLocation = (destination) => {
         this.locationSubscription = RNLocation.subscribeToLocationUpdates(
@@ -148,7 +104,6 @@ class RouteScreen extends Component {
     };
 
     componentWillUnmount() {
-        AppState.removeEventListener('change', this._handleAppStateChange);
         this._stopUpdatingLocation()
     }
 
@@ -156,7 +111,6 @@ class RouteScreen extends Component {
     async componentDidMount() {
         const {getAllRoutes} = this.props
         getAllRoutes({status: null, sort: 'today'})
-        AppState.addEventListener('change', this._handleAppStateChange);
         RNLocation.configure({
             desiredAccuracy: {
                 ios: "bestForNavigation",
@@ -282,10 +236,7 @@ class RouteScreen extends Component {
         const {fetching, fetchingTasks, routes = [], route = {}, currentLocation} = this.props
         let activeRoute = this.getActiveRoute()
         let tasksList = []
-        const {selectedRouteId, navigationInProgress} = this.state
-        if (navigationInProgress) {
-            this.showNavigationDialog()
-        }
+        const {selectedRouteId, navigationInProgress, nextTask, nextRouteId, arrived} = this.state
         const originLocation = {...currentLocation, ...DefaultDelta}
         let locationCoordinates = []
         let wayPoints = null
@@ -372,6 +323,29 @@ class RouteScreen extends Component {
                     ListEmptyComponent={<AnimatedAlert title={strings.noRouteFound}/>}
                     ListHeaderComponent={this.renderListHeaderComponent(activeRoute)}
                 />
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={navigationInProgress}
+                    onRequestClose={() => {}}>
+                    <View style={styles.modalMainContainer}>
+                    <View style={styles.navModalContainer}>
+                        <View style={styles.header}>
+                            <Text style={styles.heading}>{arrived ? 'Arrived' : 'Navigation in progress'}</Text>
+                        </View>
+                        <Text style={styles.cancelNavigation}>{arrived ? 'Your destination has arrived. Mark Task as completed or Cancel.' : 'Do you want to cancel navigation?'}</Text>
+                        <RoundedButton
+                            buttonContainer={styles.modalButton}
+                            text={'Mark Task Done'}
+                            onPress={() => this.props.updateTaskStatusReq(nextTask.task.id, nextRouteId, TASK_STATUSES.COMPLETED)}
+                        />
+                        <RoundedButton buttonContainer={styles.modalButton} text={'Cancel'} onPress={() => {
+                            this.setState({navigationInProgress: false})
+                            Actions.tabbar({type: 'reset'})
+                        }}/>
+                    </View>
+                    </View>
+                </Modal>
                 <ActionButtons onPressActionButton1={Actions.createActivity}
                                onPressActionButton2={Actions.createRoute}/>
                 <ActionSheet

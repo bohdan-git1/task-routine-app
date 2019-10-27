@@ -141,6 +141,7 @@ android {
 dependencies {
     implementation project(':react-native-firebase')
     implementation "com.google.android.gms:play-services-base:16.1.0"
+    implementation "com.braintreepayments.api:braintree:2.17.0"
     implementation "com.google.firebase:firebase-core:16.0.6"
     implementation "com.google.firebase:firebase-messaging:17.3.4"
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar'

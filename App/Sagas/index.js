@@ -1,6 +1,5 @@
 import {all, takeLatest} from 'redux-saga/effects'
 import API from '../Services/Api'
-
 // Types
 import {StartupTypes} from '../Redux/StartupRedux'
 import {UserTypes} from '../Redux/UserRedux'
@@ -8,19 +7,26 @@ import {CalendarTypes} from '../Redux/CalendarRedux'
 import {FamilyTypes} from "../Redux/FamilyRedux";
 import {FolderTypes} from "../Redux/FolderRedux";
 import {RouteTypes} from "../Redux/RouteRedux";
-
 // generator Handlers
 import {onGetCurrentLocation, startup} from './StartupSagas'
 import {onAddNewTask, onDeleteTask, onGetAllTasks, onGetTaskDetails} from './CalendarSagas'
-import {logout, onAddProfile, onLogin, onLoginSuccess, onResendPin, onSignUp, onVerifyPin} from './UserSagas'
-import { onCreateFamily, onFetchFamily } from "./FamilySagas";
-
+import {
+    logout,
+    onAddProfile,
+    onEditProfile,
+    onLogin,
+    onLoginSuccess,
+    onResendPin,
+    onSignUp,
+    onVerifyPin
+} from './UserSagas'
+import {onChangeFamilyPermissions, onCreateFamily, onFetchFamily, onGetFamilyPermissions} from "./FamilySagas";
 //api urls
-import {APP_URL} from "../Lib/AppConstants";
 import {onGetFolders} from "./FolderSagas";
 import {
     onCreateRoute,
-    onDeleteRoute, onGetActiveRoute,
+    onDeleteRoute,
+    onGetActiveRoute,
     onGetRoutes,
     onGetSpecificRoute,
     onUpdateRouteStatus,
@@ -34,7 +40,7 @@ import {
 
 // The API we use is only used from Sagas, so we create it here and pass along
 // to the sagas which need it.
-const api = API.create(APP_URL)
+const api = API.create()
 
 /* ------------- Connect Types To Sagas ------------- */
 
@@ -48,6 +54,7 @@ export default function* root() {
         takeLatest(UserTypes.VERIFY_PIN, onVerifyPin, api),
         takeLatest(UserTypes.RESEND_PIN, onResendPin, api),
         takeLatest(UserTypes.ADD_PROFILE, onAddProfile, api),
+        takeLatest(UserTypes.EDIT_PROFILE, onEditProfile, api),
         takeLatest(UserTypes.LOGOUT, logout, api),
         takeLatest(UserTypes.GET_CURRENT_LOCATION, onGetCurrentLocation, api),
 
@@ -60,6 +67,8 @@ export default function* root() {
         // Family
         takeLatest(FamilyTypes.CREATE_FAMILY, onCreateFamily, api),
         takeLatest(FamilyTypes.FETCH_FAMILY, onFetchFamily, api),
+        takeLatest(FamilyTypes.GET_FAMILY_PERMISSIONS, onGetFamilyPermissions, api),
+        takeLatest(FamilyTypes.CHANGE_FAMILY_PERMISSIONS, onChangeFamilyPermissions, api),
 
         //Folders
         takeLatest(FolderTypes.GET_FOLDERS, onGetFolders, api),

@@ -67,4 +67,6 @@ export default {
     enterRouteName: `Please enter route name`,
     selectTasks: `Select Tasks to create route`,
     somethingWentWrong: 'Something went wrong',
+    editProfile: 'Edit Profile',
+    getPremium: 'Get Premium Version.',
 }

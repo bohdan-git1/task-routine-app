@@ -1,7 +1,6 @@
 import i18n from 'i18n-js'
 import React, {Component} from 'react'
-import {Image, Text, Platform} from 'react-native'
-import {Actions} from "react-native-router-flux";
+import {Image, Platform, Text} from 'react-native'
 import PhoneInput from 'react-native-phone-input'
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 

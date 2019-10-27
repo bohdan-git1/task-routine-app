@@ -35,26 +35,21 @@ export default StyleSheet.create({
         fontFamily: Fonts.type.semiBold
     },
     contentContainer: {
-        paddingVertical: Metrics.baseMargin
-    },
-    calendarType: {
-        color: Colors.black,
-    },
-    checkCircle: {
-        fontSize: 25,
-        color: Colors.primaryColorI
-    },
-    itemContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomWidth: 1,
-        padding: Metrics.baseMargin,
-        justifyContent: 'space-between',
-        borderBottomColor: Colors.frost
+        paddingVertical: Metrics.marginThirty
     },
     backIcon: {
         fontSize: 30,
         color: Colors.snow,
         paddingHorizontal: Metrics.baseMargin,
+    },
+    buttonContainer: {
+        marginTop: Metrics.baseMargin,
+        marginHorizontal: Metrics.baseMargin,
+        backgroundColor: Colors.primaryColorI
+    },
+    message: {
+        textAlign: 'center',
+        color: Colors.gray,
+        fontSize: Fonts.size.small
     }
 })

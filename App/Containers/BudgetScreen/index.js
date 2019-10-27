@@ -32,7 +32,8 @@ class BudgetScreen extends Component {
 
     renderListHeader = () => {
         const {family = {}} = this.props
-        const {name, users = []} = family
+        let {name, users = []} = family
+        users = users.filter(family => family.status === 'active')
         const {date} = this.state
         return (
             <View>

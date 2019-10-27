@@ -200,7 +200,7 @@ class HomeTab extends Component {
         const activeTask = tasks[0] || {}
         let {task: {name: taskName, fromTime= '', toTime = ''} = {}} = activeTask
              if(!isEmpty(taskName)){
-                 taskName = `${taskName} at ${moment(fromTime).format('MM/DD/YYYY')}\n${moment(fromTime).format('HH:mm')} to ${moment(toTime).format('HH:mm')}`
+                 taskName = `${taskName} at ${moment(fromTime).format('MM/DD/YYYY')}\n${moment(fromTime).format('h:m a')} to ${moment(toTime).format('h:m a')}`
              } else {
                  taskName = strings.noTaskPlanned
              }
@@ -351,7 +351,8 @@ class HomeTab extends Component {
     render() {
         const {familyName, selectedContacts, showContactsList, contact, showAddFamilyMember} = this.state
         const {isSignup, family = {}, fetching, contacts, folders, routesFetching} = this.props
-        const {name, users = []} = family
+        let {name, users = []} = family
+        users = users.filter(family => family.status === 'active')
         if (fetching) {
             return (
                 <View style={styles.mainContainer}>

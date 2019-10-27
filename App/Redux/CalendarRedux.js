@@ -19,7 +19,9 @@ const {Types, Creators} = createActions({
 
     deleteTask: ['taskId'],
     deleteTaskSuccess: ['taskId'],
-    deleteTaskFailure: ['error']
+    deleteTaskFailure: ['error'],
+
+    syncCalendar: ['calendarId'],
 })
 
 export const CalendarTypes = Types
@@ -31,7 +33,8 @@ export const INITIAL_STATE = Immutable({
     error: null,
     fetching: false,
     task: {},
-    tasks: []
+    tasks: [],
+    calendarId: ''
 })
 
 /* ------------- Reducers ------------- */
@@ -64,6 +67,8 @@ export const deleteTaskSuccess = (state, {taskId}) => {
 }
 export const deleteTaskFailure = (state) => state.merge({fetching: false, error: true})
 
+export const syncCalendar = (state, {calendarId}: Object) => state.merge({calendarId})
+
 
 /* ------------- Hookup Reducers To Types ------------- */
 
@@ -85,5 +90,6 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.DELETE_TASK_SUCCESS]: deleteTaskSuccess,
     [Types.DELETE_TASK_FAILURE]: deleteTaskFailure,
 
+    [Types.SYNC_CALENDAR]: syncCalendar,
 
 })

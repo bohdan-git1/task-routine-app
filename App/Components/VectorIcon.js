@@ -31,7 +31,7 @@ export default class VectorIcon extends Component {
     const {name, type, size, color, style, onPress} = this.props
     switch (type) {
       case 'AntDesign':
-        return (<AntDesign style={style} name={name} size={size} color={color} />)
+        return (<AntDesign style={style} name={name} size={size} color={color} onPress={onPress}/>)
       case 'Ionicons':
         return (<IoniconsIcons style={style} name={name} size={size} color={color} onPress={onPress}/>)
       case 'FontAwesome':

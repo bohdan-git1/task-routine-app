@@ -8,7 +8,9 @@ export default StyleSheet.create({
         width: 150,
         alignSelf: 'center',
         borderRadius: 75,
-        marginBottom: Metrics.baseMargin
+        borderColor: Colors.snow,
+        marginBottom: Metrics.baseMargin,
+        borderWidth: StyleSheet.hairlineWidth
     },
     inputLabel: {
         padding: 0,
@@ -22,5 +24,8 @@ export default StyleSheet.create({
     inputContainerMain: {
         color: Colors.snow,
         backgroundColor: Colors.transparent
+    },
+    buttonText: {
+        color: Colors.snow
     }
 })

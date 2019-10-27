@@ -5,8 +5,9 @@ import {Colors} from "../../Themes";
 import {MAPS_KEY} from "../../Lib/AppConstants";
 import PropTypes from "prop-types";
 import LocationView from "../../Components/LocationView/LocationView";
+import {connect} from "react-redux";
 
-export default class PlacePicker extends Component {
+class PlacePicker extends Component {
     static propTypes = {
         onPlacePicked: PropTypes.function,
     }
@@ -16,7 +17,7 @@ export default class PlacePicker extends Component {
     }
 
     render() {
-        const {onPlacePicked} = this.props
+        const {onPlacePicked, currentLocation} = this.props
         return (
             <SafeAreaView style={styles.mainContainer}>
                 <LocationView
@@ -24,9 +25,16 @@ export default class PlacePicker extends Component {
                     markerColor={Colors.themeColor}
                     onLocationSelect={onPlacePicked}
                     actionButtonStyle={{backgroundColor: Colors.themeColor}}
-                    initialLocation={{  longitude: -158.0209227, latitude: 21.5010495}}
+                    initialLocation={currentLocation}
                 />
             </SafeAreaView>
         )
     }
 }
+
+const mapStateToProps = ({user: {currentLocation = {}}}) => {
+    return {currentLocation}
+}
+
+export default connect(mapStateToProps, null)(PlacePicker)
+

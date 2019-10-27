@@ -106,10 +106,7 @@ export default class LocationView extends React.Component {
   };
 
   _getCurrentLocation = () => {
-    navigator.geolocation.getCurrentPosition(position => {
-      let location = (({ latitude, longitude }) => ({ latitude, longitude }))(position.coords);
-      this._setRegion(location);
-    });
+      this._setRegion(this.props.initialLocation);
   };
 
   render() {
@@ -128,7 +125,7 @@ export default class LocationView extends React.Component {
         />
         <Entypo
           name={'location-pin'}
-          size={30}
+          size={35}
           color={this.props.markerColor}
           style={{ backgroundColor: 'transparent' }}
         />

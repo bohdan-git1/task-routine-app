@@ -103,6 +103,23 @@ export function* onAddProfile(api, { userId, info, isSignup }) {
     }
 }
 
+export function* onEditProfile(api, { userId, info }) {
+    try {
+        const {res} = yield call(Api.callServer, api.editProfile, info, true, userId)
+        if (res && res.isSuccess) {
+            yield put(UserActions.editProfileSuccess(res.data))
+        } else {
+            if (res.error && typeof res.error === "string") {
+                showMessage(res.error)
+            }
+            yield put(UserActions.editProfileFailure({}))
+        }
+    } catch (e) {
+        yield put(UserActions.editProfileFailure(e.message))
+    }
+}
+
+
 export function* logout(api) {
     api.setHeaders({'Authorization': ''})
     Actions.login({type: 'reset'})

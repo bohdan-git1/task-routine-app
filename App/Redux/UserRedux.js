@@ -26,6 +26,10 @@ const {Types, Creators} = createActions({
     addProfileFailure: ['error'],
     updateIsSignUp: ['isSignup'],
 
+    editProfile: ['userId', 'info'],
+    editProfileSuccess: ['user'],
+    editProfileFailure: ['error'],
+
     getCurrentLocation: null,
     getCurrentLocationSuccess: ['currentLocation'],
     getCurrentLocationFailure: ['error'],
@@ -76,11 +80,16 @@ export const resendPinRequest = (state) => state.merge({fetching: true})
 export const resendPinSuccess = (state, {user}) => state.merge({fetching: false, error: null, user})
 export const resendPinFailure = (state) => state.merge({fetching: false, error: true})
 
-// Resend PIN
+// Add Profile
 export const addProfileRequest = (state) => state.merge({fetching: true})
 export const addProfileSuccess = (state, { user, isSignup }) => state.merge({fetching: false, error: null, user, isSignup})
 export const addProfileFailure = (state) => state.merge({fetching: false, error: true})
 export const updateIsSignup = (state, { isSignup }) => state.merge({ isSignup })
+
+// Edit Profile
+export const editProfileRequest = (state) => state.merge({fetching: true})
+export const editProfileSuccess = (state, { user }) => state.merge({fetching: false, error: null, user})
+export const editProfileFailure = (state) => state.merge({fetching: false, error: true})
 
 // get Current Location
 export const getCurrentLocationReq = (state) => state.merge({fetchingLocation: true, error: null})
@@ -118,6 +127,10 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.ADD_PROFILE]: addProfileRequest,
     [Types.ADD_PROFILE_SUCCESS]: addProfileSuccess,
     [Types.ADD_PROFILE_FAILURE]: addProfileFailure,
+
+    [Types.EDIT_PROFILE]: editProfileRequest,
+    [Types.EDIT_PROFILE_SUCCESS]: editProfileSuccess,
+    [Types.EDIT_PROFILE_FAILURE]: editProfileFailure,
 
     [Types.GET_CURRENT_LOCATION]: getCurrentLocationReq,
     [Types.GET_CURRENT_LOCATION_SUCCESS]: getCurrentLocationSuccess,

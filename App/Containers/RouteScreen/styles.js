@@ -22,5 +22,41 @@ export default StyleSheet.create({
     },
     routeContainer: {
         flex: 1
-    }
+    },
+    modalMainContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: Colors.windowTint
+    },
+    navModalContainer: {
+        borderRadius: 10,
+        backgroundColor: Colors.snow,
+        width: Metrics.screenWidth-30,
+        paddingBottom: Metrics.doubleBaseMargin,
+    },
+    header: {
+        alignItems: 'center',
+        padding: Metrics.marginFifteen,
+        borderTopRightRadius: Metrics.baseMargin,
+        borderTopLeftRadius: Metrics.baseMargin,
+        backgroundColor: Colors.primaryColorI,
+    },
+    heading: {
+        color: Colors.snow,
+        textAlign: 'center',
+        fontSize: Fonts.size.input,
+        fontFamily: Fonts.type.bold
+    },
+    cancelNavigation: {
+        color: Colors.black,
+        textAlign: 'center',
+        fontSize: Fonts.size.input,
+        paddingVertical: Metrics.doubleBaseMargin,
+    },
+    modalButton: {
+        marginTop: Metrics.baseMargin,
+        marginHorizontal: Metrics.baseMargin,
+        backgroundColor: Colors.primaryColorI
+    },
 })

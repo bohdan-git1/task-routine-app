@@ -18,6 +18,13 @@ class CustomWebview extends React.Component {
       isLoading: navState.loading,
       scalesPageToFit: true
     })
+    if (navState.title === "success") {
+      // this.setState({ showModal: false, status: "Complete" });
+    } else if (navState.title === "cancel") {
+      // this.setState({ showModal: false, status: "Cancelled" });
+    } else {
+      return;
+    }
   }
 
   constructor (props) {
@@ -63,6 +70,7 @@ class CustomWebview extends React.Component {
           injectedJavaScript={isVideoUrl ? getJSForVideoDimens() : ''}
           javaScriptEnabled
           contentInset={contentInsets}
+
           allowsInlineMediaPlayback
           mediaPlaybackRequiresUserAction={false}
           startInLoadingState

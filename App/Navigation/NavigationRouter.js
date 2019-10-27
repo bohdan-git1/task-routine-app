@@ -107,7 +107,10 @@ class NavigationRouter extends Component {
                             url='https://www.google.com' // todo: change url according to your default
                             component={CustomWebview}
                             title='Webview'
+                            navigationBarStyle={styles.primaryNavBar}
+                            renderLeftButton={<BackButton/>}
                             titleStyle={styles.navBarTextTabs}
+                            renderRightButton={<View style={styles.emptyRightButton}/>}
                         />
                         <Scene
                             initial

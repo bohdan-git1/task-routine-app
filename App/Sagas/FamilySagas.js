@@ -36,3 +36,40 @@ export function* onFetchFamily (api, { familyId }) {
         yield put(FamilyActions.fetchFamilyFailure(e.message))
     }
 }
+
+export function* onGetFamilyPermissions (api) {
+    try {
+        const { res } = yield call(Api.callServer, api.getFamilyPermissions, {}, true)
+
+        if (res && res.isSuccess) {
+            yield put(FamilyActions.getFamilyPermissionsSuccess(res.items))
+        } else {
+            if (res.error && typeof res.error === "string") {
+                showMessage(res.error)
+            }
+            yield put(FamilyActions.getFamilyPermissionsFailure())
+        }
+    } catch (e) {
+        yield put(FamilyActions.getFamilyPermissionsFailure(e.message))
+    }
+}
+
+
+
+export function* onChangeFamilyPermissions (api, { familyId, permissions }) {
+    try {
+        const { res } = yield call(Api.callServer, api.changeFamilyPermission, permissions, true, familyId)
+
+        if (res && res.isSuccess) {
+            yield put(FamilyActions.changeFamilyPermissionsSuccess(res.data))
+
+        } else {
+            if (res.error && typeof res.error === "string") {
+                showMessage(res.error)
+            }
+            yield put(FamilyActions.changeFamilyPermissionsFailure())
+        }
+    } catch (e) {
+        yield put(FamilyActions.changeFamilyPermissionsFailure(e.message))
+    }
+}

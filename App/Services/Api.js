@@ -1,8 +1,9 @@
 // a library to wrap and simplify api calls
 import apisauce from 'apisauce'
+import {APP_URL} from "../Lib/AppConstants";
 
 // our "constructor"
-const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
+const create = (baseURL = `${APP_URL}api/`) => {
     // ------
     // STEP 1
     // ------
@@ -39,6 +40,7 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
     const verifyPinCode = (info) => api.post('users/verify', info)
     const resendPinCode = (info) => api.post('users/resend', info)
     const addProfile = (info, userId) => api.post(`users/addprofile/${userId}`, info)
+    const editProfile = (info, userId) => api.put(`users/${userId}`, info)
 
     // Calendar
     const addNewTask = (task) => api.post('tasks', task)
@@ -51,6 +53,8 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
     // family
     const createFamily = (data) => api.post('families', data)
     const fetchFamily = ({ familyId }) => api.get(`families/${familyId}`)
+    const getFamilyPermissions = () => api.get(`userpermissions`)
+    const changeFamilyPermission = (permissions, familyId) => api.put(`userpermissions/${familyId}`, permissions)
 
     //folders
     const getFolders = () => api.get('folders')
@@ -82,6 +86,7 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
         verifyPinCode,
         resendPinCode,
         addProfile,
+        editProfile,
         addNewTask,
         getAllTasks,
         getTaskDetails,
@@ -89,6 +94,8 @@ const create = (baseURL = 'http://18.191.149.64:3030/api/') => {
 
         createFamily,
         fetchFamily,
+        getFamilyPermissions,
+        changeFamilyPermission,
 
         getFolders,
 

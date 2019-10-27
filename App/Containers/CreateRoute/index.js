@@ -42,7 +42,7 @@ class CreateRoute extends Component {
         const {id: routeId} = item || {}
         let {taskId = [], selectedTasks} = this.state
         if (taskId.includes(String(routeId))) {
-            const index = taskId.findIndex((item) => item === routeId)
+            const index = taskId.findIndex((item) => item === String(routeId))
             taskId.splice(index, 1)
             selectedTasks = selectedTasks.filter(({id}) => { return String(id) !== String(routeId)})
         } else {
@@ -53,7 +53,17 @@ class CreateRoute extends Component {
     }
 
     onConfirmedDate = (pickedDate) => {
-        const {pickerKey} = this.state
+        let {pickerKey, tasks} = this.state
+        let taskId = []
+        let selectedTasks = []
+        if(pickerKey === 'filterDate'){
+            const filteredTasks = tasks.filter(({date}) => moment(date).format('DD-MM-YYYY') === moment(pickedDate).format('DD-MM-YYYY'))
+            filteredTasks.forEach((item) => {
+                selectedTasks.push(item)
+                taskId.push(String(item.id))
+            })
+            this.setState({selectedTasks, taskId})
+        }
         this.setState({[pickerKey]: pickedDate, showDatePicker: false})
     }
 
@@ -125,7 +135,7 @@ class CreateRoute extends Component {
                     this.setState({showDatePicker: true, pickerKey: 'filterDate'})
                 }}>
                     <VectorIcon name={'ios-arrow-back'} type={'Ionicons'} style={styles.arrowIcon}/>
-                    <Text style={styles.filterDate}>{moment(filterDate).format('DD MMMM, YYYY')}</Text>
+                    <Text style={styles.filterDate}>{moment(filterDate).format('MM/DD/YYYY')}</Text>
                     <VectorIcon name={'ios-arrow-forward'} type={'Ionicons'} style={styles.arrowIcon}/>
                 </TouchableOpacity>
                 <FlatList
