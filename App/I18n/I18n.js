@@ -5,6 +5,7 @@ const en = require('./languages/english.json')
 const ur = require('./languages/ur.json')
 
 i18n.fallbacks = true
+i18n.locale = 'en'
 i18n.translations = { en, ur}
 /*
 const fallback = { languageTag: 'en', isRTL: false }

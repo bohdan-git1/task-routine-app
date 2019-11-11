@@ -20,8 +20,10 @@ class LoginScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            username: __DEV__ ? 'KY002' : '',
-            password: __DEV__ ? 'Kamran.123*' : ''
+            username: __DEV__ ? 'xyz' : '',
+            password: __DEV__ ? 'Qwerty@123' : ''
+            // username: __DEV__ ? 'KY002' : '',
+            // password: __DEV__ ? 'Kamran.123*' : ''
         }
     }
 

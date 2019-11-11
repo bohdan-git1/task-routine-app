@@ -94,7 +94,7 @@ export const deleteRouteSuccess = (state, {routeId}) =>{
 export const deleteRouteFailure = (state) => state.merge({fetching: false, error: true})
 
 //Get Specific Route
-export const getSpecificRoute = (state) => state.merge({fetchingTasks: true})
+export const getSpecificRoute = (state) => state.merge({ fetchingTasks: true })
 export const getSpecificRouteSuccess = (state, {route}) => state.merge({fetchingTasks: false, error: null, route})
 export const getSpecificRouteFailure = (state) => state.merge({fetchingTasks: false, error: true})
 

@@ -6,6 +6,7 @@
  */
 
 #import "AppDelegate.h"
+#import <Firebase.h>
 @import GooglePlaces;
 @import GoogleMaps;
 
@@ -13,9 +14,10 @@
 #import <React/RCTRootView.h>
 
 @implementation AppDelegate
-
+  
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [FIRApp configure];
   NSURL *jsCodeLocation;
 
   [GMSPlacesClient provideAPIKey:@"AIzaSyBEhXXp2d0qDvVOJnDHTmQCD2hNeG2fDDg"];

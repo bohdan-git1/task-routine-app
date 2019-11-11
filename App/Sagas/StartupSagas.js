@@ -17,6 +17,7 @@ export function* startup(api) {
         yield put(UserActions.loginSuccess(user))
         yield delay(500)
         yield put(CalendarActions.getAllTasks())
+        yield put(UserActions.fetchMe())
     } else {
         Actions.home({type: 'reset'})
     }

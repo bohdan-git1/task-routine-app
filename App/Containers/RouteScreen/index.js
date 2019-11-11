@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Dimensions, FlatList, Modal, SafeAreaView, StatusBar, Text, View} from 'react-native'
+import {Dimensions, FlatList, Modal, SafeAreaView, StatusBar, Text, View, Platform} from 'react-native'
 import MapView from "react-native-maps";
 import MapViewDirections from 'react-native-maps-directions';
 import * as _ from 'lodash'
@@ -214,7 +214,8 @@ class RouteScreen extends Component {
             latitude: currentLocation.latitude,
             longitude: currentLocation.longitude,
             start: `${currentLocation.latitude},${currentLocation.longitude}`,
-            end: `${destination.latitude},${destination.longitude}`
+            end: `${destination.latitude},${destination.longitude}`,
+            provider: 'google'
         }
         showMessage(strings.navigationStarted)
         openMap(mapUrl)
@@ -233,7 +234,7 @@ class RouteScreen extends Component {
     }
 
     render() {
-        const {fetching, fetchingTasks, routes = [], route = {}, currentLocation} = this.props
+        const {userSettings, fetching, fetchingTasks, routes = [], route = {}, currentLocation} = this.props
         let activeRoute = this.getActiveRoute()
         let tasksList = []
         const {selectedRouteId, navigationInProgress, nextTask, nextRouteId, arrived} = this.state
@@ -346,7 +347,7 @@ class RouteScreen extends Component {
                     </View>
                     </View>
                 </Modal>
-                <ActionButtons onPressActionButton1={Actions.createActivity}
+                <ActionButtons userSettings={userSettings} onPressActionButton1={Actions.createActivity}
                                onPressActionButton2={Actions.createRoute}/>
                 <ActionSheet
                     cancelButtonIndex={2}
@@ -362,8 +363,9 @@ class RouteScreen extends Component {
     }
 }
 
-const mapStateToProps = ({route: {fetching, activeRoute, fetchingTasks, routes = [], route = {}}, user: {currentLocation}}) => {
-    return {fetching, routes, route, currentLocation, activeRoute, fetchingTasks}
+const mapStateToProps = ({route: {fetching, activeRoute, fetchingTasks, routes = [], route = {}},
+                          user: {user: { userSettings = {} } = {}, currentLocation} = {}}) => {
+    return {fetching, routes, route, currentLocation, activeRoute, fetchingTasks, userSettings}
 }
 
 const mapDispatchToProps = (dispatch) => {

@@ -37,6 +37,7 @@ const create = (baseURL = `${APP_URL}api/`) => {
     //
     const signUpUser = (info) => api.post('users/signup', info)
     const signIn= (info) => api.post('users/signin', info)
+    const fetchMeReq = (info) => api.post('users/me', info)
     const verifyPinCode = (info) => api.post('users/verify', info)
     const resendPinCode = (info) => api.post('users/resend', info)
     const addProfile = (info, userId) => api.post(`users/addprofile/${userId}`, info)
@@ -83,6 +84,7 @@ const create = (baseURL = `${APP_URL}api/`) => {
         ...api,
         signUpUser,
         signIn,
+        fetchMeReq,
         verifyPinCode,
         resendPinCode,
         addProfile,

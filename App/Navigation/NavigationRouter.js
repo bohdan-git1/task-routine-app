@@ -234,7 +234,8 @@ class NavigationRouter extends Component {
                                 iconName='map'
                                 key='tab1'
                                 icon={TabIcon}
-                                component={RouteScreen}items
+                                component={RouteScreen}
+                                items
                                 IconClass={Entypo}
                                 title={'VIEW ROUTE'}
                                 navigationBarStyle={styles.primaryNavBar}

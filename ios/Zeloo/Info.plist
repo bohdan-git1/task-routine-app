@@ -6,6 +6,17 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>Zeloo</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>MKDirectionsRequest</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.apple.maps.directionsrequest</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -17,13 +28,28 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.5</string>
+	<string>1.0.8</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MKDirectionsApplicationSupportedModes</key>
+	<array>
+		<string>MKDirectionsModeBike</string>
+		<string>MKDirectionsModeBus</string>
+		<string>MKDirectionsModeCar</string>
+		<string>MKDirectionsModeFerry</string>
+		<string>MKDirectionsModeOther</string>
+		<string>MKDirectionsModePedestrian</string>
+		<string>MKDirectionsModePlane</string>
+		<string>MKDirectionsModeRideShare</string>
+		<string>MKDirectionsModeStreetCar</string>
+		<string>MKDirectionsModeSubway</string>
+		<string>MKDirectionsModeTaxi</string>
+		<string>MKDirectionsModeTrain</string>
+	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -39,14 +65,16 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Our app does not request this permission or utilize this functionality but it is included in our info.plist since our app utilizes the react-native-permissions library, which references this permission in its code.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>${PRODUCT_NAME} requires contacts permissions to send messages and to add your family members into your family.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Our app does not request this permission or utilize this functionality but it is included in our info.plist since our app utilizes the react-native-permissions library, which references this permission in its code.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Allow Zeloo to access calendar</string>
 	<key>NSCameraUsageDescription</key>
 	<string>${PRODUCT_NAME} requires camera permissions to capture and upload user image</string>
+	<key>NSContactsUsageDescription</key>
+	<string>${PRODUCT_NAME} requires contacts permissions to send messages and to add your family members into your family.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>${PRODUCT_NAME} requires location permissions to provide you task and routing.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>${PRODUCT_NAME} requires location permissions to provide you task and routing.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -80,6 +108,10 @@
 		<string>Myriad_Pro_Bold.ttf</string>
 		<string>Myriad_Pro_Regular.ttf</string>
 		<string>Myriad_Pro_Semibold.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

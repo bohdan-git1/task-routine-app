@@ -350,7 +350,7 @@ class HomeTab extends Component {
 
     render() {
         const {familyName, selectedContacts, showContactsList, contact, showAddFamilyMember} = this.state
-        const {isSignup, family = {}, fetching, contacts, folders, routesFetching} = this.props
+        const {isSignup, family = {}, fetching, contacts, folders, routesFetching, user: { userSettings = {} } = {}} = this.props
         let {name, users = []} = family
         users = users.filter(family => family.status === 'active')
         if (fetching) {
@@ -430,7 +430,9 @@ class HomeTab extends Component {
                         <ContactsSectionList sectionListData={contacts} renderItem={this.renderContactItem}/>
                     </SafeAreaView>
                 </ModalComponent>
-                <ActionButtons onPressActionButton1={this.onCreateTask} onPressActionButton2={Actions.createRoute}/>
+                <ActionButtons userSettings={userSettings}
+                               onPressActionButton1={this.onCreateTask}
+                               onPressActionButton2={Actions.createRoute}/>
                 <ActionSheet
                     cancelButtonIndex={3}
                     title={strings.sureEditFolder}

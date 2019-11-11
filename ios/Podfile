@@ -57,14 +57,30 @@ target 'Zeloo' do
 
   pod 'react-native-calendar-events', :path => '../node_modules/react-native-calendar-events'
 
+  pod 'RNFirebase', :path => '../node_modules/react-native-firebase/ios'
+
+  pod 'Firebase/Core', '~> 6.3.0'
+
+  pod 'Firebase/Messaging', '~> 6.3.0'
+
+  pod 'RNI18n', :path => '../node_modules/react-native-i18n'
+
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
   pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
+  pod 'GoogleMaps'
+  pod 'Google-Maps-iOS-Utils'
+  pod 'GoogleUtilities'
+  pod 'GoogleAppMeasurement'
+
   pod 'react-native-maps', :path => '../node_modules/react-native-maps'
 
-  pod 'react-native-location', :path => '../node_modules/react-native-location'
+  pod 'react-native-google-maps', path: '../node_modules/react-native-maps'
+
+  pod 'react-native-location', :path => '../node_modules/react-native-location/react-native-location.podspec'
 
 end
 

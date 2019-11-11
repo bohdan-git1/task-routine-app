@@ -13,6 +13,10 @@ const {Types, Creators} = createActions({
     loginSuccess: ['user'],
     loginFailure: ['error'],
 
+    fetchMe: null,
+    fetchMeSuccess: ['user'],
+    fetchMeFailure: ['error'],
+
     verifyPin: ['info'],
     verifyPinSuccess: ['user'],
     verifyPinFailure: ['error'],
@@ -70,6 +74,18 @@ export const loginSuccess = (state, {user}) => {
 }
 export const loginFailure = (state) => state.merge({fetching: false, error: true})
 
+// Login
+export const fetchMeRequest = (state) => state.merge({fetching: true})
+export const fetchMeSuccess = (state, {user}) => {
+    const { user: stateUser = {} } = state
+    let newUser = user
+    if (!_.isEmpty(stateUser) && stateUser.id === user.id) {
+        newUser.familyId = (newUser.familyId || stateUser.familyId)
+    }
+    return state.merge({fetching: false, error: null, user: newUser})
+}
+export const fetchMeFailure = (state) => state.merge({fetching: false, error: true})
+
 // Verify PIN
 export const verifyPinRequest = (state) => state.merge({fetching: true})
 export const verifyPinSuccess = (state, {user}) => state.merge({fetching: false, error: null, user})
@@ -115,6 +131,10 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.LOGIN]: loginRequest,
     [Types.LOGIN_SUCCESS]: loginSuccess,
     [Types.LOGIN_FAILURE]: loginFailure,
+
+    [Types.FETCH_ME]: fetchMeRequest,
+    [Types.FETCH_ME_SUCCESS]: fetchMeSuccess,
+    [Types.FETCH_ME_FAILURE]: fetchMeFailure,
 
     [Types.VERIFY_PIN]: verifyPinRequest,
     [Types.VERIFY_PIN_SUCCESS]: verifyPinSuccess,

@@ -4,7 +4,7 @@ import styles from './styles'
 import CustomCalendar from "../../Components/CustomCalendar";
 import CalendarItem from "../../Components/CalendarItem";
 import i18n from 'i18n-js'
-import {convertDataTasks, FormatDateTime} from "../../Lib/Utilities";
+import {convertDataTasks, FormatDateTime, showMessage} from "../../Lib/Utilities";
 import VectorIcon from "../../Components/VectorIcon";
 import {Colors, Images} from "../../Themes";
 import {Actions} from "react-native-router-flux";
@@ -12,6 +12,7 @@ import CalendarActions from "../../Redux/CalendarRedux";
 import {connect} from "react-redux";
 import {ProgressDialog} from "../../Components/ProgressDialog";
 import RNCalendarEvents from "react-native-calendar-events";
+import strings from "../../Constants/strings";
 
 class Calendars extends Component {
     constructor(props) {
@@ -41,8 +42,15 @@ class Calendars extends Component {
     }
 
     renderNewEventButton = () => {
+        const { userSettings: { canCreateActivity } = {} } = this.props
         return (
-            <TouchableOpacity onPress={Actions.createActivity} style={styles.addButton}>
+            <TouchableOpacity onPress={() => {
+                if (canCreateActivity) {
+                    Actions.createActivity()
+                } else {
+                    showMessage(strings.cantCreateActivity)
+                }
+            }} style={styles.addButton}>
                 <VectorIcon name={'plus'} type={'Entypo'} style={styles.plusIcon}/>
             </TouchableOpacity>
         )
@@ -65,8 +73,8 @@ class Calendars extends Component {
     }
 }
 
-const mapStateToProps = ({calendar: {fetching, tasks = []}}) => {
-    return {fetching, tasks}
+const mapStateToProps = ({user: { user: { userSettings = {} } = {} } = {}, calendar: {fetching, tasks = []}}) => {
+    return {fetching, tasks, userSettings}
 }
 
 const mapDispatchToProps = (dispatch) => {

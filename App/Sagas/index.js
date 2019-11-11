@@ -13,7 +13,7 @@ import {onAddNewTask, onDeleteTask, onGetAllTasks, onGetTaskDetails} from './Cal
 import {
     logout,
     onAddProfile,
-    onEditProfile,
+    onEditProfile, onFetchMe,
     onLogin,
     onLoginSuccess,
     onResendPin,
@@ -50,6 +50,7 @@ export default function* root() {
         takeLatest(StartupTypes.STARTUP, startup, api),
         takeLatest(UserTypes.SIGN_UP, onSignUp, api),
         takeLatest(UserTypes.LOGIN, onLogin, api),
+        takeLatest(UserTypes.FETCH_ME, onFetchMe, api),
         takeLatest(UserTypes.LOGIN_SUCCESS, onLoginSuccess, api),
         takeLatest(UserTypes.VERIFY_PIN, onVerifyPin, api),
         takeLatest(UserTypes.RESEND_PIN, onResendPin, api),

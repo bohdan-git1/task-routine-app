@@ -39,6 +39,22 @@ export function* onLogin(api, {info}) {
     }
 }
 
+export function* onFetchMe (api) {
+    try {
+        const {res} = yield call(Api.callServer, api.fetchMeReq, {}, true)
+        if (res && res.isSuccess && res.data) {
+            yield put(UserActions.fetchMeSuccess(res.data))
+        } else {
+            if (res.error && typeof res.error === "string") {
+                showMessage(res.error)
+            }
+            yield put(UserActions.fetchMeFailure({}))
+        }
+    } catch (e) {
+        yield put(UserActions.fetchMeFailure(e.message))
+    }
+}
+
 export function* onLoginSuccess(api, {user}) {
     try {
         const {token = ''} = user || {}

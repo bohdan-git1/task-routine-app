@@ -69,4 +69,6 @@ export default {
     somethingWentWrong: 'Something went wrong',
     editProfile: 'Edit Profile',
     getPremium: 'Get Premium Version.',
+    cantCreateActivity: 'You are not allowed to create Activity.',
+    cantCreateRoute: 'You are not allowed to create Route.',
 }
