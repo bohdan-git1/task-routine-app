@@ -11,7 +11,8 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    View
+    View,
+    Keyboard,
 } from 'react-native'
 import * as _ from 'lodash'
 import {connect} from "react-redux";
@@ -22,13 +23,20 @@ import styles from './styles'
 import {ProgressDialog} from "../../../Components/ProgressDialog";
 import images from "../../../Themes/Images";
 import FamilyActions from "../../../Redux/FamilyRedux";
+import FolderActions from "../../../Redux/FolderRedux";
 import FamilyMember from "../../../Components/FamilyMember";
-import {ADD_FAMILY_MEMBER_BUTTON_ID} from "../../../Lib/AppConstants";
+import {ADD_FAMILY_MEMBER_BUTTON_ID, imageOptions, photosPermissionTypes} from "../../../Lib/AppConstants";
 import Colors from "../../../Themes/Colors";
 import AddContacts from "../../../Components/AddContacts";
 import ModalComponent from "../../../Components/ModalComponent";
 import strings from "../../../Constants/strings";
-import {showErrorMessage, TASK_STATUSES} from "../../../Lib/Utilities";
+import {
+    handlePermissionError,
+    showErrorMessage,
+    showMessage,
+    TASK_STATUSES,
+    uploadImageToCloudinary
+} from "../../../Lib/Utilities";
 import CreateNewContact from "../../../Components/CreateNewContact";
 import FoldersComponent from "../../../Components/FoldersComponent";
 import {Actions} from "react-native-router-flux";
@@ -36,6 +44,9 @@ import ActionButtons from "../../../Components/ActionButtons";
 import RouteActions from "../../../Redux/RouteRedux";
 import {isEmpty} from "ramda";
 import moment from "moment";
+import ImagePicker from "react-native-image-crop-picker";
+import RenameFolder from "../../../Components/RenameFolder";
+import BudgetActions from "../../../Redux/BudgetRedux";
 
 class HomeTab extends Component {
 
@@ -47,13 +58,22 @@ class HomeTab extends Component {
             showFamilyMembers: false,
             selectedContacts: [],
             showContactsList: false,
-            showAddFamilyMember: false
+            showAddFamilyMember: false,
+            folderId: null,
+            uploadingFolderImage: false,
+            selectedFolderIcon: '',
+            renamingFolder: false,
+            addingFolder: false,
+            folderName: '',
+            picUrl: ''
         }
         StatusBar.setBackgroundColor(Colors.primaryColorI)
     }
 
     async componentDidMount() {
-        this.props.getActiveRoute({status: 'active', sort: 'today'})
+        const {getBudgetCategories, getActiveRoute} = this.props
+        getBudgetCategories()
+        getActiveRoute({status: 'active', sort: 'today'})
         if (Platform.OS === "android") {
             await this.requestContactPermissionAndroid();
             this.processData();
@@ -62,10 +82,20 @@ class HomeTab extends Component {
         }
     }
 
-    componentWillReceiveProps({fetching: newFetching}) {
-        const {showAddFamilyMember} = this.state
+    UNSAFE_componentWillReceiveProps({fetching: newFetching, folderFetching: newFolderFetching}) {
+        const {showAddFamilyMember, renamingFolder, uploadingFolderImage} = this.state
         if (!newFetching && newFetching !== this.props.fetching && showAddFamilyMember) {
             this.setState({showAddFamilyMember: false})
+        }
+        if (!newFolderFetching && this.props.folderFetching !== newFolderFetching) {
+            let booleansToFalse = {}
+            if (renamingFolder) {
+                booleansToFalse.renamingFolder = false
+            }
+            if (uploadingFolderImage) {
+                booleansToFalse.uploadingFolderImage = false
+            }
+            this.setState({folderId: null, ...booleansToFalse, updatingFolder: false})
         }
     }
 
@@ -172,6 +202,13 @@ class HomeTab extends Component {
         }
     }
 
+    onHideRenameFolder = () => {
+        const {renamingFolder} = this.state
+        if (renamingFolder) {
+            this.setState({renamingFolder: false})
+        }
+    }
+
     renderContactItem = (item, index, section) => {
         const {thumbnailPath = '', name = ''} = item
         return (
@@ -198,13 +235,13 @@ class HomeTab extends Component {
     renderCurrentTask = () => {
         const {route: {tasks = []} = {}} = this.props
         const activeTask = tasks[0] || {}
-        let {task: {name: taskName, fromTime= '', toTime = ''} = {}} = activeTask
-             if(!isEmpty(taskName)){
-                 taskName = `${taskName} at ${moment(fromTime).format('MM/DD/YYYY')}\n${moment(fromTime).format('h:m a')} to ${moment(toTime).format('h:m a')}`
-             } else {
-                 taskName = strings.noTaskPlanned
-             }
-            return <Text style={styles.noTaskText}>{taskName}</Text>
+        let {task: {name: taskName, fromTime = '', toTime = ''} = {}} = activeTask
+        if (!isEmpty(taskName)) {
+            taskName = `${taskName} at ${moment(fromTime).format('MM/DD/YYYY')}\n${moment(fromTime).format('h:m a')} to ${moment(toTime).format('h:m a')}`
+        } else {
+            taskName = strings.noTaskPlanned
+        }
+        return <Text style={styles.noTaskText}>{isEmpty(activeTask) ? strings.noTaskFound : taskName}</Text>
     }
 
     renderActiveRoute = () => {
@@ -279,16 +316,20 @@ class HomeTab extends Component {
 
     onStopActiveRoute = () => {
         const {updateRouteStatus, activeRoute: {id: routeId} = {}} = this.props
-        if(routeId) {
+        if (routeId) {
             updateRouteStatus(routeId, {status: 'inactive'}, true)
         }
     }
 
     renderTaskActions = () => {
+        const {route: {tasks = []} = {}} = this.props
+        const activeTask = tasks[0] || {}
+        const noActiveTask = isEmpty(activeTask)
         return (
             <View style={styles.bottomActionsRow}>
                 <TouchableOpacity style={styles.taskLeftActionBtn}
                                   activeOpacity={0.8}
+                                  disabled={noActiveTask}
                                   onPress={this.onMarkTaskDone}>
                     <Text style={styles.taskBtnText}>{strings.markDone}</Text>
                 </TouchableOpacity>
@@ -299,6 +340,7 @@ class HomeTab extends Component {
                 </View>
                 <TouchableOpacity style={styles.taskRightActionBtn}
                                   activeOpacity={0.8}
+                                  disabled={noActiveTask}
                                   onPress={this.onIgnoreTask}>
                     <Text style={styles.taskBtnText}>{strings.ignoreForNow}</Text>
                 </TouchableOpacity>
@@ -329,29 +371,107 @@ class HomeTab extends Component {
         )
     }
 
-    onAddFolder = () => {
-        // todo: handle add folder
-        Alert.alert('api needs to be integerated.')
-    }
-
     onCreateTask = () => {
         Actions.createActivity()
     }
 
     onFolderActionPressed = (index) => {
-        switch (index){
-            case 0: this.photoAction.show()
-            break
-            case 1: () => {}
-            break
-            default: () => {}
+        const {renamingFolder, updatingFolder, folderId} = this.state
+        const {deleteFolder} = this.props
+        switch (index) {
+            case 0:
+                if (this.photoAction && this.photoAction.show) {
+                    this.photoAction.show();
+                }
+                break
+            case 1:
+                if (!renamingFolder && !updatingFolder) {
+                    this.setState({updatingFolder: true, renamingFolder: true})
+                }
+                break
+            case 2:
+                if (folderId && !updatingFolder) {
+                    this.setState({updatingFolder: true}, () => {
+                        deleteFolder(folderId)
+                    })
+                }
+            default:
+        }
+    }
+
+    onRenameFolder = (newName) => {
+        const {updateFolder, folderFetching} = this.props
+        const {uploadingFolderImage, folderId, renamingFolder} = this.state
+        if (!folderId || !renamingFolder || folderFetching || uploadingFolderImage) {
+            return
+        }
+        updateFolder({id: folderId, name: newName})
+    }
+
+    onImageActionPressed = (index) => {
+        switch (index) {
+            case 0:
+                ImagePicker.openCamera(imageOptions).then(image => {
+                    this.uploadImgAndUpdateViaApi(image.path || '')
+                }).catch(err => {
+                    handlePermissionError(photosPermissionTypes.CAMERA)
+                })
+                break
+            case 1:
+                ImagePicker.openPicker(imageOptions).then(image => {
+                    this.uploadImgAndUpdateViaApi(image.path || '')
+                }).catch(err => {
+                    handlePermissionError(photosPermissionTypes.PHOTOS)
+                })
+                break
+        }
+    }
+
+    uploadImgAndUpdateViaApi = (path) => {
+        const {updateFolder, folderFetching, createFolder} = this.props
+        const {uploadingFolderImage, folderId, addingFolder, folderName = ''} = this.state
+        if (folderFetching || uploadingFolderImage) {
+            return
+        }
+        this.setState({selectedFolderIcon: '', uploadingFolderImage: true})
+        uploadImageToCloudinary(path)
+            .then((picUrl) => {
+                this.setState({picUrl}, () => {
+                    if (!addingFolder) {
+                        updateFolder({id: folderId, imgUrl: picUrl})
+                    }
+                })
+            })
+            .catch(err => {
+                console.tron.warn({errorUploadingImageTOCloudinary: err})
+            })
+            .finally(() => {
+                this.setState({uploadingFolderImage: false})
+            })
+    }
+
+    saveFolder = () => {
+        Keyboard.dismiss()
+        const {folderName: name, picUrl: imgUrl} = this.state
+        if (isEmpty(name)) {
+            showMessage('Please enter folder name')
+        } else if (isEmpty(imgUrl)) {
+            showMessage('Please select folder image')
+        } else {
+            const {createFolder} = this.props
+            createFolder({name, imgUrl})
+            this.setState({addingFolder: false})
         }
     }
 
     render() {
-        const {familyName, selectedContacts, showContactsList, contact, showAddFamilyMember} = this.state
-        const {isSignup, family = {}, fetching, contacts, folders, routesFetching, user: { userSettings = {} } = {}} = this.props
+        const {
+            familyName, selectedContacts, showContactsList, contact, renamingFolder,
+            uploadingFolderImage, showAddFamilyMember, updatingFolder, folderName, addingFolder, picUrl
+        } = this.state
+        const {isSignup, family = {}, fetching, contacts, folders, routesFetching, user: {userSettings = {}} = {}, folderFetching} = this.props
         let {name, users = []} = family
+        const folderState = {folderName, addFolder: addingFolder, picUrl}
         users = users.filter(family => family.status === 'active')
         if (fetching) {
             return (
@@ -420,16 +540,29 @@ class HomeTab extends Component {
                     {this.renderCurrentRoutePanel()}
                     <FoldersComponent containerStyles={styles.foldersComponentContainer}
                                       folders={folders}
-                                      onPressFolder={() => this.folderActions.show()}
-                                      onAddFolder={this.onAddFolder}/>
+                                      folderState={folderState}
+                                      uploadingFolderImage={uploadingFolderImage}
+                                      selectedFolderId={this.state.folderId}
+                                      updatingFolder={updatingFolder}
+                                      onEditFolderName={(folderName) => this.setState({folderName})}
+                                      onAddFolder={() => this.setState({addingFolder: !addingFolder})}
+                                      addFolderImage={() => this.photoAction.show()}
+                                      onSaveFolder={this.saveFolder}
+                                      onPressFolder={(folderId) => {
+                                          this.setState({folderId})
+                                          this.folderActions.show()
+                                      }}
+                    />
                 </ScrollView>
-                <ProgressDialog hide={!routesFetching}/>
+                <ProgressDialog hide={!routesFetching && !uploadingFolderImage && !folderFetching}/>
                 <ModalComponent isModalVisible={showContactsList}
                                 closeModal={this.onHideContactList}>
                     <SafeAreaView style={{flex: 1, backgroundColor: Colors.snow}}>
                         <ContactsSectionList sectionListData={contacts} renderItem={this.renderContactItem}/>
                     </SafeAreaView>
                 </ModalComponent>
+                <RenameFolder isModalVisible={renamingFolder} onChangeName={this.onRenameFolder}
+                              onCloseModal={this.onHideRenameFolder}/>
                 <ActionButtons userSettings={userSettings}
                                onPressActionButton1={this.onCreateTask}
                                onPressActionButton2={Actions.createRoute}/>
@@ -440,10 +573,11 @@ class HomeTab extends Component {
                     onPress={this.onFolderActionPressed}
                     options={[strings.editFolder, strings.renameFolder, strings.deleteFolder, strings.cancel]}
                 />
-                 <ActionSheet
+                <ActionSheet
                     cancelButtonIndex={2}
                     title={strings.chooseIcon}
                     ref={o => this.photoAction = o}
+                    onPress={this.onImageActionPressed}
                     options={[strings.takePhoto, strings.chooseFromLibrary, strings.cancel]}
                 />
             </View>
@@ -456,10 +590,20 @@ const mapStateToProps = ({
                              user: {user, isSignup} = {},
                              family: {fetching, family} = {},
                              route: {activeRoute = {}, route = {}, fetching: routesFetching} = {},
-                             folder: {folders = [], hasNoMore: noMoreFolders = false} = {}
+                             folder: {fetching: folderFetching, folders = [], hasNoMore: noMoreFolders = false} = {}
                          }) => {
     return {
-        user, route, isSignup, fetching, routesFetching, activeRoute, family, contacts, folders, noMoreFolders
+        user,
+        route,
+        isSignup,
+        fetching,
+        routesFetching,
+        activeRoute,
+        family,
+        contacts,
+        folders,
+        noMoreFolders,
+        folderFetching
     }
 }
 
@@ -467,9 +611,13 @@ const mapDispatchToProps = (dispatch) => {
     return {
         deleteRoute: (routeId) => dispatch(RouteActions.deleteRoute(routeId)),
         getActiveRoute: (params) => dispatch(RouteActions.getActiveRoute(params)),
+        updateFolder: (params) => dispatch(FolderActions.updateFolder(params)),
+        createFolder: (params) => dispatch(FolderActions.createFolder(params)),
         fetchFamilyReq: (familyId) => dispatch(FamilyActions.fetchFamily(familyId)),
+        getBudgetCategories: (params) => dispatch(BudgetActions.getAllCategories(params)),
         createFamilyReq: (familyName, invites) => dispatch(FamilyActions.createFamily(familyName, invites)),
         updateTaskStatusReq: (taskId, routeId, status) => dispatch(RouteActions.updateTaskStatus(taskId, routeId, status)),
+        deleteFolder: (folderId) => dispatch(FolderActions.deleteFolder(folderId)),
         updateRouteStatus: (routeId, params, fetchAfterUpdate) => dispatch(RouteActions.updateRouteStatus(routeId, params, fetchAfterUpdate))
     }
 }

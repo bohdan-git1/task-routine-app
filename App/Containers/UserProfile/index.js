@@ -31,7 +31,10 @@ class UserProfile extends Component {
 
     render() {
         const {name, username, familyName} = this.state;
-        const {user: {picUrl = ''} = {}} = this.props
+        let {user: {picUrl = ''} = {}} = this.props
+        if (!picUrl) {
+            picUrl = ''
+        }
         return (
             <GradientView>
                 <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>

@@ -1,24 +1,28 @@
 import styles from './styles'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {Text, TouchableOpacity, View, Keyboard} from 'react-native'
+import {isEmpty} from 'lodash'
+import {Keyboard, Text, TouchableOpacity, View} from 'react-native'
 import Input from "../Input";
 import VectorIcon from "../VectorIcon";
-import {Budget_Types, User_Roles} from "../../Lib/AppConstants";
 import {Dropdown} from "react-native-material-dropdown";
 import {Colors} from "../../Themes";
 import RoundedButton from "../RoundedButton";
+import {connect} from "react-redux";
+import {showMessage} from "../../Lib/Utilities";
 
 
-export default class BudgetDialog extends Component {
+class BudgetDialog extends Component {
     static propTypes = {
         onDone: PropTypes.function,
         onCancel: PropTypes.function
     }
 
     static defaultProps = {
-        onDone: () => {},
-        onCancel: () => {}
+        onDone: () => {
+        },
+        onCancel: () => {
+        }
     }
 
 
@@ -27,15 +31,24 @@ export default class BudgetDialog extends Component {
         this.state = {
             amount: '',
             description: '',
-            type: 'Electricity'
+            type: 'Select Category',
+            categoryId: ''
         };
     }
 
     saveBudget = () => {
         Keyboard.dismiss()
         const {onDone} = this.props
-        const {amount, description, type} = this.state
-        onDone({amount, description, type})
+        const {amount, description, type, categoryId} = this.state
+        if (isEmpty(categoryId)) {
+            showMessage('Please select category')
+        } else if (isEmpty(amount)) {
+            showMessage('Please enter amount')
+        } else if (isEmpty(description)) {
+            showMessage('Please enter description')
+        } else {
+            onDone({amount, description, categoryId})
+        }
     }
 
     renderHeader = () => {
@@ -43,17 +56,18 @@ export default class BudgetDialog extends Component {
         return (
             <View style={styles.header}>
                 <Text style={styles.heading}>AMOUNT SPENT</Text>
-                <TouchableOpacity onPress={onCancel}>
-                <VectorIcon name='closecircleo' type='AntDesign' style={styles.closeIcon}/>
-                </TouchableOpacity>
+                <VectorIcon name='closecircleo' type='AntDesign' style={styles.closeIcon} onPress={onCancel}/>
             </View>
         )
     }
 
 
     render() {
-        const {onCancel} = this.props
         const {amount, description, type} = this.state
+        const {categories} = this.props
+        const Budget_Types = categories.map(({name, id, budget, totalSpent}) => {
+            return {value: name, id, budget, totalSpent}
+        })
         return (
             <TouchableOpacity activeOpacity={1} style={styles.mainContainer}>
                 <TouchableOpacity activeOpacity={1} style={styles.innerContainer}>
@@ -66,7 +80,10 @@ export default class BudgetDialog extends Component {
                             dropdownOffset={styles.dropdownOffset}
                             containerStyle={styles.dropdownContainer}
                             inputContainerStyle={styles.inputContainer}
-                            onChangeText={(type) => {this.setState({type})}}
+                            onChangeText={(type, index, data) => {
+                                const {id: categoryId = ''} = data[index]
+                                this.setState({type, categoryId: String(categoryId)})
+                            }}
                         />
                         <Text style={styles.amountLabel}>Amount</Text>
                         <View style={styles.budgetContainer}>
@@ -107,8 +124,17 @@ export default class BudgetDialog extends Component {
                         onPress={this.saveBudget}
                         buttonContainer={styles.buttonContainer}
                     />
-                    </TouchableOpacity>
+                </TouchableOpacity>
             </TouchableOpacity>
         )
     }
 }
+
+const mapStateToProps = ({budget: {categories}}) => {
+    return {
+        categories
+    }
+}
+
+export default connect(mapStateToProps, null)(BudgetDialog)
+

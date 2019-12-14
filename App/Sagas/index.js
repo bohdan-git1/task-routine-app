@@ -7,6 +7,8 @@ import {CalendarTypes} from '../Redux/CalendarRedux'
 import {FamilyTypes} from "../Redux/FamilyRedux";
 import {FolderTypes} from "../Redux/FolderRedux";
 import {RouteTypes} from "../Redux/RouteRedux";
+import {BudgetTypes} from "../Redux/BudgetRedux";
+import {LocatorTypes} from "../Redux/LocatorRedux";
 // generator Handlers
 import {onGetCurrentLocation, startup} from './StartupSagas'
 import {onAddNewTask, onDeleteTask, onGetAllTasks, onGetTaskDetails} from './CalendarSagas'
@@ -22,7 +24,8 @@ import {
 } from './UserSagas'
 import {onChangeFamilyPermissions, onCreateFamily, onFetchFamily, onGetFamilyPermissions} from "./FamilySagas";
 //api urls
-import {onGetFolders} from "./FolderSagas";
+import {onCreateFolder, onDeleteFolder, onGetFolders, onUpdateFolder} from "./FolderSagas";
+import {onAddCategory, onAddNewBudget, onGetAllCategories} from "./BudgetSagas";
 import {
     onCreateRoute,
     onDeleteRoute,
@@ -32,6 +35,7 @@ import {
     onUpdateRouteStatus,
     onUpdateTaskStatus
 } from "./RouteSagas";
+import {onAddLocation, onGetAllLocations} from "./LocatorSagas";
 
 /* ------------- Types ------------- */
 /* ------------- Sagas ------------- */
@@ -73,6 +77,9 @@ export default function* root() {
 
         //Folders
         takeLatest(FolderTypes.GET_FOLDERS, onGetFolders, api),
+        takeLatest(FolderTypes.CREATE_FOLDER, onCreateFolder, api),
+        takeLatest(FolderTypes.UPDATE_FOLDER, onUpdateFolder, api),
+        takeLatest(FolderTypes.DELETE_FOLDER, onDeleteFolder, api),
 
         //Route
         takeLatest(RouteTypes.CREATE_ROUTE, onCreateRoute, api),
@@ -82,6 +89,15 @@ export default function* root() {
         takeLatest(RouteTypes.DELETE_ROUTE, onDeleteRoute, api),
         takeLatest(RouteTypes.GET_SPECIFIC_ROUTE, onGetSpecificRoute, api),
         takeLatest(RouteTypes.GET_ACTIVE_ROUTE, onGetActiveRoute, api),
+
+        //Budget
+        takeLatest(BudgetTypes.GET_ALL_CATEGORIES, onGetAllCategories, api),
+        takeLatest(BudgetTypes.ADD_CATEGORY, onAddCategory, api),
+        takeLatest(BudgetTypes.ADD_NEW_BUDGET, onAddNewBudget, api),
+
+        //Locator
+        takeLatest(LocatorTypes.GET_ALL_LOCATIONS, onGetAllLocations, api),
+        takeLatest(LocatorTypes.ADD_LOCATION, onAddLocation, api),
 
     ])
 }

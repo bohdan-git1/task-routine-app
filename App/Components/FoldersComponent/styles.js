@@ -57,5 +57,33 @@ export default StyleSheet.create({
         marginTop: Metrics.marginFifteen,
         paddingHorizontal: Metrics.baseMargin,
         textAlign: 'center'
+    },
+    newFolderContainer: {
+        borderRadius: Metrics.baseMargin,
+        marginVertical: Metrics.baseMargin,
+        backgroundColor: Colors.primaryColor,
+        paddingHorizontal: Metrics.marginFifteen,
+        paddingVertical: Metrics.marginThirty,
+    },
+    uploadImageText: {
+        color: Colors.snow,
+        fontSize: Fonts.size.regular,
+        paddingTop: Metrics.baseMargin
+    },
+    closeIcon: {
+        fontSize: 20,
+        color: Colors.snow,
+        position: 'absolute',
+        top: Metrics.baseMargin,
+        right: Metrics.baseMargin
+    },
+    folderIcon: {
+        width: 50,
+        height: 50,
+        marginLeft: Metrics.baseMargin
+    },
+    imageContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
     }
 })

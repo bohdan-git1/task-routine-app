@@ -5,19 +5,25 @@ import BudgetItem from "../../Components/BudgetItem";
 import {FlatList, ImageBackground, SafeAreaView, Text, View} from 'react-native'
 import Images from "../../Themes/Images";
 import BudgetHeadingItem from "../../Components/BudgetHeadingItem";
-import {Budgets} from "../../DummyData";
 import {connect} from "react-redux";
 import FamilyMember from "../../Components/FamilyMember";
 import moment from "moment";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import BudgetActions from "../../Redux/BudgetRedux";
+import CategoryDialog from "../../Components/CategoryDialog";
+import {ProgressDialog} from "../../Components/ProgressDialog";
 
 class BudgetScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
             date: moment(),
-            showDatePicker: false
+            showDatePicker: false,
+            showCategoryDialog: false
         }
+    }
+    componentDidMount() {
+        this.props.getAllCategories()
     }
 
     renderItem = ({item}) => {
@@ -30,11 +36,22 @@ class BudgetScreen extends Component {
         )
     }
 
+    showActivityDialog = () => {
+        const {showCategoryDialog} = this.state
+        this.setState({showCategoryDialog: !showCategoryDialog})
+    }
+
     renderListHeader = () => {
-        const {family = {}} = this.props
+        const {family = {}, categories} = this.props
         let {name, users = []} = family
         users = users.filter(family => family.status === 'active')
         const {date} = this.state
+        let totalBudget = 0
+        let totalBudgetSpent = 0
+       categories.forEach(({budget, totalSpent}) => {
+           totalBudget = totalBudget + budget
+           totalBudgetSpent = totalBudgetSpent + totalSpent
+        })
         return (
             <View>
                 <ImageBackground style={styles.topHeaderImage}
@@ -50,27 +67,28 @@ class BudgetScreen extends Component {
                                   extraData={this.props.family}/>
                     </View>
                 </ImageBackground>
-                <BudgetHeadingItem item={{type: 'TOTAL REMAINING', budget: '$3780.00'}} image={Images.budgetToSpent}/>
+                <BudgetHeadingItem item={{type: 'TOTAL REMAINING', budget: totalBudget - totalBudgetSpent}} image={Images.budgetToSpent}/>
                 <View style={styles.expensesRow}>
-                    <BudgetHeadingItem item={{type: 'TOTAL SPENT', budget: '$570.00'}} image={Images.budgetSpent}/>
-                    <BudgetHeadingItem item={{type: 'TOTAL BUDGET', budget: '$4350.00'}} image={Images.budgetTotal}/>
+                    <BudgetHeadingItem item={{type: 'TOTAL SPENT', budget: totalBudgetSpent}} image={Images.budgetSpent}/>
+                    <BudgetHeadingItem item={{type: 'TOTAL BUDGET', budget: totalBudget}} image={Images.budgetTotal}/>
                 </View>
                 <View style={styles.categoryBar}>
                     <Text style={styles.categoryText}>Category</Text>
-                    <VectorIcon name='pluscircleo' type='AntDesign' style={styles.plusIcon}/>
+                    <VectorIcon name='pluscircleo' type='AntDesign' style={styles.plusIcon} onPress={this.showActivityDialog}/>
                 </View>
             </View>
         )
     }
 
     render() {
-        const {showDatePicker} = this.state
+        const {fetching, categories} = this.props
+        const {showDatePicker, showCategoryDialog} = this.state
         return (
             <SafeAreaView style={styles.mainContainer}>
                 <FlatList
                     numColumns={2}
-                    data={Budgets}
-                    extraData={Budgets}
+                    data={categories}
+                    extraData={categories}
                     renderItem={this.renderItem}
                     keyExtractor={item => String(item.id)}
                     ListHeaderComponent={this.renderListHeader}
@@ -84,17 +102,24 @@ class BudgetScreen extends Component {
                     onConfirm={ (date) => this.setState({date, showDatePicker: false})}
                     onCancel={() => this.setState({showDatePicker: false})}
                 />
+                {showCategoryDialog && <CategoryDialog closeDialog={this.showActivityDialog}/> }
+                <ProgressDialog hide={!fetching}/>
             </SafeAreaView>
         )
     }
 }
 
-const mapStateToProps = ({family: {family}}) => {
+const mapStateToProps = ({budget: {fetching, categories}, family: {family}}) => {
     return {
-        family
+        fetching, categories, family
     }
 }
 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getAllCategories: (params) => dispatch(BudgetActions.getAllCategories(params))
+    }
+}
 
-export default connect(mapStateToProps, null)(BudgetScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(BudgetScreen)
 

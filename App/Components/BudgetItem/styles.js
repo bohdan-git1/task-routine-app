@@ -4,7 +4,7 @@ import {ApplicationStyles, Colors, Metrics, Fonts} from '../../Themes/index'
 export default StyleSheet.create({
     ...ApplicationStyles.screen,
     gradientContainer: {
-        flex: 1,
+        width: (Metrics.screenWidth - 20)/2,
         padding: Metrics.baseMargin,
         margin: Metrics.smallMargin,
     },

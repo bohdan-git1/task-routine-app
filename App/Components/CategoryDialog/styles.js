@@ -13,6 +13,7 @@ export default StyleSheet.create({
         backgroundColor: Colors.promptBackground
     },
     innerContainer: {
+        height: 400,
         width: Metrics.screenWidth - 40,
         marginTop: Metrics.marginThirty,
         borderRadius: Metrics.marginFifteen,
@@ -30,25 +31,12 @@ export default StyleSheet.create({
         fontSize: Fonts.size.input,
         fontFamily: Fonts.type.bold
     },
-    dropdownContainer: {
-        height: 50,
-        borderWidth: 3,
-        paddingHorizontal: 10,
-        borderRadius: 10,
-        marginBottom: Metrics.smallMargin,
-        borderColor: Colors.primaryColorI,
-        marginVertical: Metrics.baseMargin
-    },
     inputContainer: {
         borderBottomColor: 'transparent'
     },
-    dropdownOffset: {
-        top: 10,
-        left: 0,
-
-    },
     inputLabel: {
-        color: Colors.offWhiteI
+        color: Colors.black,
+        fontFamily: Fonts.type.bold
     },
     closeIcon: {
         fontSize: 25,
@@ -60,6 +48,7 @@ export default StyleSheet.create({
         borderBottomColor: Colors.offWhiteI
     },
     contentContainer: {
+        flex: 1,
         backgroundColor: Colors.snow,
         padding: Metrics.baseMargin
     },

@@ -11,12 +11,13 @@ import styles from './styles'
 import {Colors} from "../../Themes";
 import Input from "../../Components/Input";
 import CheckBox from "../../Components/CheckBox";
-import {FormatDateTime, getCurrentLocation, showErrorMessage} from "../../Lib/Utilities";
+import {FormatDateTime, getCurrentLocation, showErrorMessage, showMessage} from "../../Lib/Utilities";
 import VectorIcon from "../../Components/VectorIcon";
 import GradientView from "../../Components/GradientView";
 import RoundedButton from "../../Components/RoundedButton";
 import FolderDialog from "../../Components/FolderDialog";
 import CalendarActions from "../../Redux/CalendarRedux";
+import BudgetActions from "../../Redux/BudgetRedux";
 import PriorityItem from "../../Components/PriorityItem";
 import {Priority_Types} from "../../Lib/AppConstants";
 import InviteDialog from "../../Components/InviteDialog";
@@ -41,36 +42,47 @@ class CreateActivity extends Component {
             priority: 1,
             note: '',
             syncCalendar: false,
-            locationCoordinates: [0,0],
+            locationCoordinates: [0, 0],
             showFolderDialog: false,
             showInviteDialog: false,
             showBudgetDialog: false,
             invites: [],
             currentLocation: {},
             fetchingCurrentLocation: false,
-            showPlacePicker: false
+            showPlacePicker: false,
+            budgetInfo: {},
+            folderId: ''
         }
         StatusBar.setBackgroundColor(Colors.primaryColorI)
     }
 
     addNewTask = () => {
-        const {addNewTaskReq} = this.props
-        const {name, locationName, date, fromTime, toTime, budget, category, priority, locationCoordinates, note, syncCalendar, invites} = this.state
-        const task = {
-            name,
-            locationName,
-            date,
-            fromTime,
-            toTime,
-            budget,
-            note,
-            folderId: 32,
-            category,
-            priority: Priority_Types[priority-1]['type'],
-            invites,
-            locationCoordinates
+        const {addNewTaskReq, addNewBudget} = this.props
+        const {name, locationName, date, fromTime, toTime, budget, category, priority, locationCoordinates, note, syncCalendar, invites, budgetInfo, folderId} = this.state
+        if(isEmpty(name)){
+            showMessage('Please enter folder name')
+        }else if(isEmpty(budget)){
+            showMessage('Please enter budget for this task')
+        }else if(isEmpty(String(folderId))){
+            showMessage('Please select folder for this task')
+        }else {
+            const task = {
+                name,
+                locationName,
+                date,
+                fromTime,
+                toTime,
+                budget,
+                note,
+                folderId,
+                category,
+                priority: Priority_Types[priority - 1]['type'],
+                invites,
+                locationCoordinates
+            }
+            addNewTaskReq(task, syncCalendar)
+            addNewBudget(budgetInfo)
         }
-        addNewTaskReq(task, syncCalendar)
     }
 
     openPlacePicker = () => {
@@ -98,15 +110,20 @@ class CreateActivity extends Component {
     }
 
     saveBudget = (budgetInfo) => {
-       const {amount: budget} = budgetInfo
-        this.setState({budget, showBudgetDialog: false})
+        const {amount: budget} = budgetInfo
+        this.setState({budget, budgetInfo, showBudgetDialog: false})
     }
 
     getCurrentLocation = () => {
         this.setState({fetchingCurrentLocation: true})
         getCurrentLocation().then(currentLocation => {
-            const { location: {longitude, latitude} = {}, address } = currentLocation
-            this.setState({currentLocation, fetchingCurrentLocation: false, locationName: address, locationCoordinates: [latitude, longitude]})
+            const {location: {longitude, latitude} = {}, address} = currentLocation
+            this.setState({
+                currentLocation,
+                fetchingCurrentLocation: false,
+                locationName: address,
+                locationCoordinates: [latitude, longitude]
+            })
         }).catch((error) => {
             showErrorMessage(error.message)
             this.setState({fetchingCurrentLocation: false})
@@ -114,11 +131,15 @@ class CreateActivity extends Component {
     }
 
     onSelectedPlace = (location) => {
-        this.setState({showPlacePicker: false, locationName: location.address, locationCoordinates: [location.latitude, location.longitude]})
+        this.setState({
+            showPlacePicker: false,
+            locationName: location.address,
+            locationCoordinates: [location.latitude, location.longitude]
+        })
     }
 
     render() {
-        const {fetching} = this.props
+        const {fetching, folders} = this.props
         const {currentLocation: {address: currentLocaitonName = ''}, showPlacePicker, name, locationName, showDatePicker, date, toTime, fromTime, pickerKey, budget, category, priority, showFolderDialog, note, syncCalendar, showInviteDialog, showBudgetDialog, fetchingCurrentLocation} = this.state
         const mode = pickerKey === 'date' ? 'date' : 'time'
         const location = currentLocaitonName || locationName
@@ -190,31 +211,16 @@ class CreateActivity extends Component {
 
                     </View>
 
-                    <View style={styles.budgetContainer}>
-
-                        <ActivityInputItem
-                            type='input'
-                            label='Budget'
-                            value={budget}
-                            iconType='Ionicons'
-                            iconName='md-arrow-dropdown'
-                            onPress={() => {this.setState({showBudgetDialog: true})}}
-                        />
-
-                        <View style={styles.dummyCategory}/>
-
-                        <ActivityInputItem
-                            type='dropdown'
-                            value={category}
-                            iconType='Ionicons'
-                            label='Budget Category'
-                            iconName='md-arrow-dropdown'
-                            onChangeCategory={(category) => {
-                                this.setState({category})
-                            }}
-                        />
-
-                    </View>
+                    <ActivityInputItem
+                        type='input'
+                        label='Budget'
+                        value={budget}
+                        iconType='Ionicons'
+                        iconName='md-arrow-dropdown'
+                        onPress={() => {
+                            this.setState({showBudgetDialog: true})
+                        }}
+                    />
 
                     <PriorityItem
                         priority={priority}
@@ -268,6 +274,8 @@ class CreateActivity extends Component {
                     onCancel={() => this.setState({showDatePicker: false})}
                 />
                 {showFolderDialog && <FolderDialog
+                    folders={folders}
+                    onSelectFolder={(folderId) => this.setState({folderId})}
                     onDone={() => this.setState({showFolderDialog: false})}
                     onCancel={() => this.setState({showFolderDialog: false})}
                 />}
@@ -281,19 +289,20 @@ class CreateActivity extends Component {
                     onCancel={() => this.setState({showBudgetDialog: false})}
                     onDone={this.saveBudget}
                 />}
-                {showPlacePicker && <PlacePicker onPlacePicked={this.onSelectedPlace}/> }
+                {showPlacePicker && <PlacePicker onPlacePicked={this.onSelectedPlace}/>}
                 <ProgressDialog hide={!fetching}/>
             </GradientView>
         )
     }
 }
 
-const mapStateToProps = ({calendar: {fetching}}) => {
-    return {fetching}
+const mapStateToProps = ({calendar: {fetching}, folder: {folders = []} = {}}) => {
+    return {fetching, folders}
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        addNewBudget: (params) => dispatch(BudgetActions.addNewBudget(params)),
         addNewTaskReq: (task, syncCalendar) => dispatch(CalendarActions.addNewTask(task, syncCalendar))
     }
 }

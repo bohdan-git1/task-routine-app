@@ -8,6 +8,7 @@ import {showMessage} from "../Lib/Utilities";
 export function* onSignUp(api, {info}) {
     try {
         const {res} = yield call(Api.callServer, api.signUpUser, info, true)
+        console.tron.warn({ onSignUp: res })
         if (res && res.isSuccess) {
             const {id: userId = ''} = res
             Actions.verifyPhone({userId})

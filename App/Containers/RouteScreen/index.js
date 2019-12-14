@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Dimensions, FlatList, Modal, SafeAreaView, StatusBar, Text, View, Platform} from 'react-native'
+import {Dimensions, FlatList, Modal, SafeAreaView, StatusBar, Text, View} from 'react-native'
 import MapView from "react-native-maps";
 import MapViewDirections from 'react-native-maps-directions';
 import * as _ from 'lodash'
@@ -22,6 +22,7 @@ import AnimatedAlert from "../../Components/AnimatedAlert";
 import RNLocation from "react-native-location";
 import {
     ARRIVED_DISTANCE_THRESHOLD,
+    getCurrentLocation,
     getLatLonDiffInMeters,
     routeHasIncompleteTask,
     routeHasTasks,
@@ -31,6 +32,8 @@ import {
 import openMap from "react-native-open-maps";
 import firebase from "react-native-firebase";
 import RoundedButton from "../../Components/RoundedButton";
+import BackgroundTimer from 'react-native-background-timer';
+import LocatorActions from "../../Redux/LocatorRedux";
 
 const {width, height} = Dimensions.get('window');
 
@@ -51,7 +54,8 @@ class RouteScreen extends Component {
             arrived: false,
             nextTask: {},
             nextRouteId: '',
-            navigationInProgress: false
+            navigationInProgress: false,
+            currentLocation: {}
         }
         this.mapView = null;
         this.activeRoute = false
@@ -81,9 +85,6 @@ class RouteScreen extends Component {
                 const {0: {longitude = 0, latitude = 0} = {}} = locations
                 this.currentLocation = {latitude, longitude}
                 this.setState({currentLocation: {latitude, longitude}}, () => {
-                    if (this.trackingMarker && this.trackingMarker.redraw) {
-                        this.trackingMarker.redraw()
-                    }
                     const distance = getLatLonDiffInMeters(latitude, longitude, destination.latitude, destination.longitude);
                     if (Math.abs(distance)) {
                         if (distance <= ARRIVED_DISTANCE_THRESHOLD) {
@@ -100,6 +101,7 @@ class RouteScreen extends Component {
 
     _stopUpdatingLocation = () => {
         this.locationSubscription && this.locationSubscription();
+        BackgroundTimer.stopBackgroundTimer();
         // this.setState({ userCurrentLocation: null });
     };
 
@@ -167,6 +169,7 @@ class RouteScreen extends Component {
     onMarkTaskDone = (taskId, status) => {
         const {updateTaskStatusReq, route} = this.props
         const {selectedRouteId} = this.state
+        BackgroundTimer.stopBackgroundTimer();
         updateTaskStatusReq(taskId, (selectedRouteId || route.id), status)
     }
 
@@ -185,6 +188,24 @@ class RouteScreen extends Component {
         updateRouteStatus(routeId, {status: 'inactive'}, true)
     }
 
+    addLocator = async (nextTask) => {
+        const {addLocation, userId, familyId} = this.props
+        const currentLocation = await getCurrentLocation()
+        const {location: {longitude, latitude} = {}, address} = currentLocation
+        const {task: {name: taskName = ''} = {}} = nextTask
+        BackgroundTimer.runBackgroundTimer(() => {
+                const location = {
+                    userId,
+                    familyId,
+                    address,
+                    taskName,
+                    locationCoordinates: [latitude, longitude]
+                }
+                addLocation(location)
+            },
+            1800000);
+    }
+
     onShowDirections = () => {
         const {fetching, fetchingTasks, route = {}} = this.props
         if (fetching || fetchingTasks) {
@@ -201,6 +222,7 @@ class RouteScreen extends Component {
             }
         } else {
             this.navigateToTask(nextTask, route.id)
+            this.addLocator(nextTask)
         }
     }
 
@@ -328,23 +350,25 @@ class RouteScreen extends Component {
                     animationType="slide"
                     transparent={true}
                     visible={navigationInProgress}
-                    onRequestClose={() => {}}>
+                    onRequestClose={() => {
+                    }}>
                     <View style={styles.modalMainContainer}>
-                    <View style={styles.navModalContainer}>
-                        <View style={styles.header}>
-                            <Text style={styles.heading}>{arrived ? 'Arrived' : 'Navigation in progress'}</Text>
+                        <View style={styles.navModalContainer}>
+                            <View style={styles.header}>
+                                <Text style={styles.heading}>{arrived ? 'Arrived' : 'Navigation in progress'}</Text>
+                            </View>
+                            <Text
+                                style={styles.cancelNavigation}>{arrived ? 'Your destination has arrived. Mark Task as completed or Cancel.' : 'Do you want to cancel navigation?'}</Text>
+                            <RoundedButton
+                                buttonContainer={styles.modalButton}
+                                text={'Mark Task Done'}
+                                onPress={() => this.props.updateTaskStatusReq(nextTask.task.id, nextRouteId, TASK_STATUSES.COMPLETED)}
+                            />
+                            <RoundedButton buttonContainer={styles.modalButton} text={'Cancel'} onPress={() => {
+                                this.setState({navigationInProgress: false})
+                                Actions.tabbar({type: 'reset'})
+                            }}/>
                         </View>
-                        <Text style={styles.cancelNavigation}>{arrived ? 'Your destination has arrived. Mark Task as completed or Cancel.' : 'Do you want to cancel navigation?'}</Text>
-                        <RoundedButton
-                            buttonContainer={styles.modalButton}
-                            text={'Mark Task Done'}
-                            onPress={() => this.props.updateTaskStatusReq(nextTask.task.id, nextRouteId, TASK_STATUSES.COMPLETED)}
-                        />
-                        <RoundedButton buttonContainer={styles.modalButton} text={'Cancel'} onPress={() => {
-                            this.setState({navigationInProgress: false})
-                            Actions.tabbar({type: 'reset'})
-                        }}/>
-                    </View>
                     </View>
                 </Modal>
                 <ActionButtons userSettings={userSettings} onPressActionButton1={Actions.createActivity}
@@ -363,9 +387,11 @@ class RouteScreen extends Component {
     }
 }
 
-const mapStateToProps = ({route: {fetching, activeRoute, fetchingTasks, routes = [], route = {}},
-                          user: {user: { userSettings = {} } = {}, currentLocation} = {}}) => {
-    return {fetching, routes, route, currentLocation, activeRoute, fetchingTasks, userSettings}
+const mapStateToProps = ({
+                             route: {fetching, activeRoute, fetchingTasks, routes = [], route = {}},
+                             user: {user: {userSettings = {}, id: userId = '', familyId = ''} = {}, currentLocation} = {}
+                         }) => {
+    return {fetching, routes, route, currentLocation, activeRoute, fetchingTasks, userSettings, userId, familyId}
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -374,6 +400,7 @@ const mapDispatchToProps = (dispatch) => {
         deleteRoute: (routeId) => dispatch(RouteActions.deleteRoute(routeId)),
         getSpecificRoute: (routeId) => dispatch(RouteActions.getSpecificRoute(routeId)),
         getActiveRoute: (params) => dispatch(RouteActions.getActiveRoute(params)),
+        addLocation: (params) => dispatch(LocatorActions.addLocation(params)),
         updateRouteStatus: (routeId, params, fetchAfterUpdate) => dispatch(RouteActions.updateRouteStatus(routeId, params, fetchAfterUpdate)),
         getCurrentLocation: () => dispatch(UserActions.getCurrentLocation()),
         updateTaskStatusReq: (taskId, routeId, status, fetchAfterUpdate) => dispatch(RouteActions.updateTaskStatus(taskId, routeId, status, fetchAfterUpdate))

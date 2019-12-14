@@ -24,14 +24,16 @@ export default class FolderDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedItem: 1
+            selectedFolder: 1
         };
     }
 
     onPickerSelect(index) {
+        const {onSelectFolder} = this.props
         this.setState({
-            selectedItem: index,
+            selectedFolder: index,
         })
+        onSelectFolder(index)
     }
 
     renderHeader = () => {
@@ -51,6 +53,7 @@ export default class FolderDialog extends Component {
 
 
     render() {
+        const {folders} = this.props
         return (
             <TouchableOpacity
                 activeOpacity={1}
@@ -58,11 +61,11 @@ export default class FolderDialog extends Component {
                 <TouchableOpacity activeOpacity={1} style={[styles.innerContainer]}>
                     {this.renderHeader()}
                     <Picker style={styles.pickerContainer}
-                            selectedValue={this.state.selectedItem}
+                            selectedValue={this.state.selectedFolder}
                             itemStyle={styles.pickerItemStyle}
                             onValueChange={(index) => this.onPickerSelect(index)}>
-                        {Folders.map((value, i) => (
-                            <PickerItem label={value} value={i} key={"money" + value}/>
+                        {folders.map(({name, id}) => (
+                            <PickerItem label={name} value={id} key={String(id)}/>
                         ))}
                     </Picker>
                 </TouchableOpacity>

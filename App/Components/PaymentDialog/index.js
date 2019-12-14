@@ -27,9 +27,9 @@ export default class PaymentDialog extends Component {
         )
     }
 
-    getToPayPal = () => {
+    getToPayPal = (plan) => {
         this.props.onClose()
-        Actions.webView({url: `${APP_URL}paypal-ui`, title: 'Get Premium Version'})
+        Actions.webView({url: `${APP_URL}paypal-ui?plan=${plan}`, title: 'Get Premium Version'})
     }
 
 
@@ -40,8 +40,8 @@ export default class PaymentDialog extends Component {
                     {this.renderHeader()}
                     <View style={styles.contentContainer}>
                         <Text style={styles.message}>Choose the premium subscription monthly or yearly</Text>
-                        <RoundedButton onPress={this.getToPayPal} buttonContainer={styles.buttonContainer} text={'Balance'}/>
-                        <RoundedButton onPress={this.getToPayPal} buttonContainer={styles.buttonContainer} text={'Zen'}/>
+                        <RoundedButton onPress={() => this.getToPayPal('balance')} buttonContainer={styles.buttonContainer} text={'Balance'}/>
+                        <RoundedButton onPress={() => this.getToPayPal('zen')} buttonContainer={styles.buttonContainer} text={'Zen'}/>
                     </View>
                 </TouchableOpacity>
             </TouchableOpacity>

@@ -15,7 +15,7 @@ import Input from "../../Components/Input";
 import CheckBox from "../../Components/CheckBox";
 import GradientView from "../../Components/GradientView";
 import RoundedButton from '../../Components/RoundedButton'
-import {handlePermissionError, isValidPassword, showMessage} from "../../Lib/Utilities";
+import {handlePermissionError, isValidPassword, showMessage, uploadImageToCloudinary} from "../../Lib/Utilities";
 import {CloudinaryCred, imageOptions, photosPermissionTypes} from "../../Lib/AppConstants";
 import UserActions from "../../Redux/UserRedux";
 import {connect} from "react-redux";
@@ -24,44 +24,48 @@ import {ProgressDialog} from "../../Components/ProgressDialog";
 class SingupInfoScreen extends Component {
     constructor(props) {
         super(props)
-        const { currentLocation: {latitude = 0, longitude = 0} = {} } = props || {}
+        const {currentLocation: {latitude = 0, longitude = 0} = {}} = props || {}
         this.state = {
             firstName: '',
             lastName: '',
             username: '',
             password: '',
             picUrl: '',
-            uploadingImage: false,
+            uploadingFolderImage: false,
             locationCoordinates: [latitude, longitude],
             acceptedTerms: false
         }
         init(CloudinaryCred.apiKey, CloudinaryCred.secret, CloudinaryCred.name)
     }
 
-    componentWillReceiveProps({currentLocation: newCurrentLocation, error: newError, fetchingLocation}){
-        const { fetchingLocation: oldFetching, currentLocation, error } = this.props
+    componentWillReceiveProps({currentLocation: newCurrentLocation, error: newError, fetchingLocation}) {
+        const {fetchingLocation: oldFetching, currentLocation, error} = this.props
         if (!fetchingLocation && fetchingLocation !== oldFetching && newError && newError !== error) {
             // todo: case while fetching location got an error
             return
         }
 
-        if(!fetchingLocation && !_.isEmpty(newCurrentLocation) && !_.isEqual(currentLocation, newCurrentLocation)) {
+        if (!fetchingLocation && !_.isEmpty(newCurrentLocation) && !_.isEqual(currentLocation, newCurrentLocation)) {
             this.setState({locationCoordinates: [newCurrentLocation.latitude, newCurrentLocation.longitude]})
         }
     }
 
-    componentDidMount () {
+    componentDidMount() {
         UserActions.getCurrentLocation()
     }
 
     uploadImage = (path) => {
-        this.setState({uploadingImage: true})
-        UploadImage(path).then((picUrl) => {
-            this.setState({picUrl, uploadingImage: false})
-        }).catch(err => {
-            //  console.tron.warn({err})
-            this.setState({uploadingImage: false})
-        })
+        this.setState({uploadingFolderImage: true})
+        uploadImageToCloudinary(path)
+            .then((picUrl) => {
+                this.setState({picUrl, uploadingFolderImage: false})
+            })
+            .catch(err => {
+                console.tron.warn({errorUploadingImageTOCloudinary: err})
+            })
+            .finally(() => {
+                this.setState({uploadingFolderImage: false})
+            })
     }
 
     onImageActionPressed = (index) => {
@@ -190,7 +194,7 @@ class SingupInfoScreen extends Component {
 }
 
 const mapStateToProps = ({user: {fetching, user, currentLocation, error}}) => {
-    return { fetching, user, currentLocation, error }
+    return {fetching, user, currentLocation, error}
 }
 
 const mapDispatchToProps = (dispatch) => {

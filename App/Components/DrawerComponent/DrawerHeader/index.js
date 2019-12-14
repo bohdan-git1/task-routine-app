@@ -12,7 +12,10 @@ export default class DrawerHeader extends Component {
     }
 
     render() {
-        const {user: {name, picUrl} = {}} = this.props
+        let {user: {name, picUrl} = {}} = this.props
+        if (!picUrl) {
+            picUrl = ''
+        }
         return (
             <ImageBackground source={images.mountainsPurpleBg}
                              style={styles.headerContainer}>

@@ -3,13 +3,14 @@ import {Colors, Images} from '../Themes/'
 import Snackbar from 'react-native-snackbar'
 import Permissions from 'react-native-permissions'
 import {isEqual, compact, isEmpty, unionBy} from 'lodash'
-import {photosPermissionTypes} from "./AppConstants";
+import {CloudinaryCred, photosPermissionTypes} from "./AppConstants";
 import moment from 'moment'
 import OpenSettings from 'react-native-open-settings'
 import RNCalendarEvents from "react-native-calendar-events";
 import Geolocation from "react-native-geolocation-service";
 import LocationServicesDialogBox from 'react-native-android-location-services-dialog-box'
 import RNGooglePlaces from "react-native-google-places";
+import {init, UploadImage} from "react-native-cloudinary-x";
 
 let connectedCallbacks = []
 export const registerConnectionChangeCB = (Callback) => {
@@ -287,3 +288,18 @@ export const routeHasTasks = (route) => {
     const { tasks = [] } = route
     return Array.isArray(tasks) || tasks.length
 }
+
+export const uploadImageToCloudinary = (path) => new Promise((resolve, reject) => {
+    try {
+        init(CloudinaryCred.apiKey, CloudinaryCred.secret, CloudinaryCred.name)
+        UploadImage(path)
+            .then((picUrl) => {
+                resolve(picUrl)
+            })
+            .catch(ex => {
+                reject(ex)
+            })
+    } catch (e) {
+        reject(e)
+    }
+})

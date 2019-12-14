@@ -39,8 +39,8 @@ class SettingsScreen extends Component {
     }
     render() {
         const {pushNotification, showCalendarDialog, calendars, showPaymentDialog} = this.state
-        let {permissions = []} = this.props
-        permissions = permissions.filter(family => family.user.status === 'active')
+        let {permissions = [], user: { role = {} } = {}} = this.props
+        permissions = permissions.filter(family => family.user && family.user.status === 'active')
         const familyMembers = permissions.map((item) => {
             const {id = '', user: {name = ''} = {},calendarPermission = false, budgetPermission = false, routePermission = false} = item
             return {id, value: name, calendarPermission, budgetPermission, routePermission}
@@ -49,9 +49,9 @@ class SettingsScreen extends Component {
             <SafeAreaView style={styles.mainContainer}>
                 <ScrollView>
                     <Text onPress={() => this.setState({showPaymentDialog: true})} style={styles.premiumVersion}>{strings.premiumVersion}</Text>
-                    <SwitchButtonGroup type={'routePermission'} groupSettingsLabel='Route' onChangeSetting={this.changePermission} groupSettings={familyMembers}/>
-                    <SwitchButtonGroup type={'calendarPermission'} groupSettingsLabel='Calendar' onChangeSetting={this.changePermission} groupSettings={familyMembers}/>
-                    <SwitchButtonGroup type={'budgetPermission'} groupSettingsLabel='Budget' onChangeSetting={this.changePermission} groupSettings={familyMembers}/>
+                    {role === 'admin' && <SwitchButtonGroup type={'routePermission'} groupSettingsLabel='Route' onChangeSetting={this.changePermission} groupSettings={familyMembers}/>}
+                    {role === 'admin' && <SwitchButtonGroup type={'calendarPermission'} groupSettingsLabel='Calendar' onChangeSetting={this.changePermission} groupSettings={familyMembers}/>}
+                    {role === 'admin' && <SwitchButtonGroup type={'budgetPermission'} groupSettingsLabel='Budget' onChangeSetting={this.changePermission} groupSettings={familyMembers}/>}
                     <SwitchButton label='Push Notification' showBorder={false} checked={pushNotification}
                                   onChangeSetting={() => {
                                       this.setState({pushNotification: !pushNotification})

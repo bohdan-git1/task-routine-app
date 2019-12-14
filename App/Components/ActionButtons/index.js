@@ -26,8 +26,8 @@ export default class ActionButtons extends Component {
     }
 
     onCreateActivity = () => {
-        const { userSettings: { canCreateActivity = true } = {}, onPressActionButton1 } = this.props
-        if (canCreateActivity) {
+        const { userSettings: { routePermission } = {}, onPressActionButton1 } = this.props
+        if (routePermission) {
             onPressActionButton1()
         } else {
             showMessage(strings.cantCreateActivity)
@@ -35,8 +35,8 @@ export default class ActionButtons extends Component {
     }
 
     onCreateRoute = () => {
-        const { userSettings: { canCreateRoute = true } = {}, onPressActionButton2 } = this.props
-        if (canCreateRoute) {
+        const { userSettings: { routePermission } = {}, onPressActionButton2 } = this.props
+        if (routePermission) {
             onPressActionButton2()
         } else {
             showMessage(strings.cantCreateRoute)

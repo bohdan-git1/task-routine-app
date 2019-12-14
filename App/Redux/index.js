@@ -12,6 +12,8 @@ export const reducers = combineReducers({
     family: require('./FamilyRedux').reducer,
     folder: require('./FolderRedux').reducer,
     route: require('./RouteRedux').reducer,
+    budget: require('./BudgetRedux').reducer,
+    locator: require('./LocatorRedux').reducer,
 })
 
 export default () => {

@@ -37,7 +37,7 @@ const create = (baseURL = `${APP_URL}api/`) => {
     //
     const signUpUser = (info) => api.post('users/signup', info)
     const signIn= (info) => api.post('users/signin', info)
-    const fetchMeReq = (info) => api.post('users/me', info)
+    const fetchMeReq = (info) => api.get('users/me', info)
     const verifyPinCode = (info) => api.post('users/verify', info)
     const resendPinCode = (info) => api.post('users/resend', info)
     const addProfile = (info, userId) => api.post(`users/addprofile/${userId}`, info)
@@ -59,6 +59,9 @@ const create = (baseURL = `${APP_URL}api/`) => {
 
     //folders
     const getFolders = () => api.get('folders')
+    const createFolder = (data) => api.post('folders', data)
+    const updateFolder = (data, folderId) => api.put(`folders/${folderId}`, data)
+    const deleteFolder = (data, folderId) => api.delete(`folders/${folderId}`, data)
 
     //Route
     const createRoute = (route) => api.post('routes', route)
@@ -66,6 +69,16 @@ const create = (baseURL = `${APP_URL}api/`) => {
     const updateRouteStatus = (params, routeId) => api.post(`routes/updateStatus/${routeId}`, params)
     const deleteRoute = (routeId) => api.delete(`routes/${routeId}`)
     const getSpecificRoute = (routeId) => api.get(`routes/${routeId}`)
+
+    //Budget
+    const getCategories = () => api.get('categories')
+    const addCategory = (params) => api.post('categories', params)
+    const addNewBudget = (params) => api.post('amounts', params)
+
+    //Locator
+    const getLocations = (params) => api.get('locators', params)
+    const addLocation = (params) => api.post('locators', params)
+
 
     // ------
     // STEP 3
@@ -100,13 +113,23 @@ const create = (baseURL = `${APP_URL}api/`) => {
         changeFamilyPermission,
 
         getFolders,
+        createFolder,
+        updateFolder,
+        deleteFolder,
 
         createRoute,
         getRoutes,
         updateRouteStatus,
         deleteRoute,
         getSpecificRoute,
-        updateTaskStatus
+        updateTaskStatus,
+
+        getCategories,
+        addCategory,
+        addNewBudget,
+
+        getLocations,
+        addLocation,
     }
 }
 

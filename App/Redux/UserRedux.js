@@ -59,7 +59,10 @@ export const INITIAL_STATE = Immutable({
 
 // SingUp
 export const signUpRequest = (state) => state.merge({fetching: true})
-export const signUpSuccess = (state, {user}) => state.merge({fetching: false, error: null, user})
+export const signUpSuccess = (state, {user}) => {
+    console.tron.warn({signUpSuccessRedux: user})
+    return state.merge({fetching: false, error: null, user})
+}
 export const signUpFailure = (state) => state.merge({fetching: false, error: true})
 
 // Login

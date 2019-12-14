@@ -22,24 +22,24 @@ export default class CheckInItem extends Component {
 
     render() {
         const {item, onPress} = this.props
-        const {fromTime = moment(),  type = '', locationName = 'Building No 1', name = 'MC'} = item || {}
+        const {createdAt = moment(), address = '', taskName = ''} = item || {}
         return (
             <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.mainContainer}>
                 <View style={styles.mainContainer}>
                     <View style={styles.yellowLine}/>
                     <View style={styles.rightContainer}>
                         <View style={styles.timeContainer}>
-                            <Text numberOfLines={1} style={styles.time}>{FormatDateTime(fromTime, 'h:mm A')}</Text>
+                            <Text numberOfLines={1} style={styles.time}>{FormatDateTime(createdAt, 'h:mm A')}</Text>
                             <View style={styles.typeContainer}>
                                 <VectorIcon name={'ios-car'} type={'Ionicons'} style={styles.carIcon}/>
                                 <Image source={Images.avatar} style={styles.userIcon}/>
                             </View>
                         </View>
                         <View style={styles.titleContainer}>
-                            <Text style={styles.title}>{name}</Text>
+                            <Text style={styles.title}>{taskName}</Text>
                             <View style={styles.locationContainer}>
                                 <VectorIcon name={'location-pin'} type={'SimpleLineIcons'} style={styles.locationIcon}/>
-                                <Text style={styles.location}>{locationName}</Text>
+                                <Text style={styles.location}>{address}</Text>
                             </View>
                         </View>
                     </View>

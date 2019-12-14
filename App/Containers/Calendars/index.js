@@ -42,10 +42,10 @@ class Calendars extends Component {
     }
 
     renderNewEventButton = () => {
-        const { userSettings: { canCreateActivity } = {} } = this.props
+        const { userSettings: { routePermission } = {} } = this.props
         return (
             <TouchableOpacity onPress={() => {
-                if (canCreateActivity) {
+                if (routePermission) {
                     Actions.createActivity()
                 } else {
                     showMessage(strings.cantCreateActivity)

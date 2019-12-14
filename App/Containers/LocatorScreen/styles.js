@@ -16,7 +16,7 @@ export default StyleSheet.create({
         height: 50,
         width: 50,
         right: 20,
-        bottom: 170,
+        bottom: 60,
         elevation: 5,
         borderRadius: 25,
         position: 'absolute',
@@ -30,5 +30,8 @@ export default StyleSheet.create({
     },
     mapContainer: {
         flex: 1
+    },
+    listContainer: {
+        height: 200
     }
 })
